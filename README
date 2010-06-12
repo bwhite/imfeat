@@ -1,0 +1,14 @@
+imfeat: Image Feature Descriptor Library for Python
+
+Goal: Standardize image feature descriptors to facilitate reuse
+
+Definition of an Image Feature
+- A python module that has a "make_features" function
+- Takes a PIL image as it's argument
+- It returns a list of image features (in the form of numpy arrays)
+- List may contain zero, one, or many features
+- If a fatal error occurs None will be returned (signifying that the feature cannot be computed on the provided image)
+- For consistency, all Python modules adhering to the specification should use the _feature suffix.
+
+def make_features(image):
+    return ()

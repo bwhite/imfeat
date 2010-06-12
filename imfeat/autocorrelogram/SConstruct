@@ -1,0 +1,19 @@
+import distutils.sysconfig
+env = Environment()
+env.Append(SHLIBPREFIX = '_')
+env.Replace(CXX = 'g++')
+env.Append(CCFLAGS =  '-O3')
+env.Append(CCFLAGS =  '-g')
+env.Append(CPPPATH = ['/usr/include/python2.6/'])
+env.Append(CPPPATH= [distutils.sysconfig.get_python_inc()])
+env.Append(SWIGFLAGS = '-python')
+env.Append(SWIGFLAGS = '-c++')
+env.Append(SWIGFLAGS = '-Wall')
+env.Append(SWIGFLAGS = '-DOBFUSOFF')
+env.Append(SWIGFLAGS = '-shadow')
+
+
+env.SharedLibrary('_Autocorrelogram',['Autocorrelogram.cpp', 'Autocorrelogram.i'])
+#env.Program('test',['test.cpp', 'Autocorrelogram.cpp'],LIBS=['cxcore', 'cv', 'highgui', 'cvaux'])
+
+Default('.')
