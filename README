@@ -8,7 +8,7 @@ Definition of an Image Feature
 - It returns a list of image features (in the form of numpy arrays)
 - List may contain zero, one, or many features
 - If a fatal error occurs None will be returned (signifying that the feature cannot be computed on the provided image)
-- For consistency, all Python modules adhering to the specification should use the _feature suffix.
+- Each feature module should have a global variable MODES that is a tuple of accepted image modes (one of  ['1', 'CMYK', 'F', 'I', 'L', 'P', 'RGB', 'RGBA', 'RGBX', 'YCbCr'] taken from PIL's Image.MODES) listed in descending order by preference (first is optimal).  If one is not provided, the module is assumed to accept all modes equally.
 
 def make_features(image):
     return ()

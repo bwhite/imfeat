@@ -1,17 +1,2 @@
-import distutils.sysconfig
-env = Environment()
-env.Append(SHLIBPREFIX = '_')
-env.Replace(CXX = 'g++')
-env.Append(CCFLAGS =  '-O3')
-env.Append(CCFLAGS =  '-Wall')
-env.Append(CPPPATH = ['/usr/include/python2.6/'])
-env.Append(CPPPATH= [distutils.sysconfig.get_python_inc()])
-env.Append(SWIGFLAGS = '-python')
-env.Append(SWIGFLAGS = '-c++')
-env.Append(SWIGFLAGS = '-Wall')
-env.Append(SWIGFLAGS = '-DOBFUSOFF')
-env.Append(SWIGFLAGS = '-shadow')
-
-
-env.SharedLibrary('_Histogram',['Histogram.cpp', 'Histogram.i'])
-Default('.')
+Import('env')
+env.SharedLibrary('lib/histogram',['Histogram.cpp'])

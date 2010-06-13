@@ -13,22 +13,29 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Test
+
+"""Helper functions for feature computation
 """
+
 __author__ = 'Brandyn A. White <bwhite@cs.umd.edu>'
 __license__ = 'GPL V3'
 
-import unittest
+def compute(feature_module, image, *args, **kw):
+    """Compute features while performing conversions and checks.
 
-import numpy as np
+    Args:
+        feature_module: A module that has a make_features function.
+        image: A PIL image.
+        args: Optional positional arguments to be passed on.
+        kw: Optional keyword arguments to be passed on.
 
-import imfeat
+    Returns:
+        Feature computation output.
+    """
 
-
-class Test(unittest.TestCase):
-    def test_0(self):
+    try:
+        if image.mode not in feature_module.MODES:
+            image = image.convert(feature_module.MODES[0])
+    except AttributeError:
         pass
-
-
-if __name__ == '__main__':
-    unittest.main()
+    return feature_module.make_features(image, *args, **kw)

@@ -2,6 +2,6 @@ from distutils.core import setup
 
 setup(name='imfeat',
       version='.01',
-      packages=[_va, _vaf, _vaf + '.moments', _vaf + '.histogram_joint', _vaf + '.surf'],
-      package_data = {_va : ['lib/*'], _vaf + '.moments': ['lib/*'], _vaf + '.histogram_joint': ['lib/*'], _vaf + '.surf': ['lib/*']}
+      packages=['imfeat', 'imfeat.moments', 'imfeat.histogram_joint', 'imfeat.histogram'],
+      package_data = {'imfeat.moments': ['lib/*.so'], 'imfeat.histogram_joint': ['lib/*.so'], 'imfeat.histogram': ['lib/*.so']}
       )

@@ -53,7 +53,7 @@ double Moments::safe_root(double val, int rpower) {
   return -pow(-val, p);
 }
 
-void compute(int channels, int num_pixels, int num_moments, char *data, float *moments) {
+void compute(int channels, int num_pixels, int num_moments, char *data, double *moments) {
   Moments m(channels, num_pixels, num_moments);
   std::vector<double> v = m.compute(data);
   for (int i = 0; i < v.size(); i++)

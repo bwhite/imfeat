@@ -2,6 +2,8 @@ import numpy as np
 import ctypes
 from . import __path__
 
+MODES = ['RGB']
+
 # Required Types
 _char_ptr = ctypes.POINTER(ctypes.c_char)
 _int_ptr = ctypes.POINTER(ctypes.c_int32)
@@ -15,10 +17,13 @@ _hj.compute.restype = ctypes.c_int
 _hj.compute.argtypes = [_int, _int, _char_ptr, _int_ptr]
 
 
-def compute(num_pixels, num_bins, data):
+def _compute(num_pixels, num_bins, data):
     bins = np.ascontiguousarray(np.zeros(num_bins**3, dtype=np.int32))
     _hj.compute(num_pixels,
                 num_bins,
                 data,
                 bins.ctypes.data_as(_int_ptr))
     return bins
+
+def make_features(image):
+    return [np.array(_compute(image.size[0] * image.size[1], 16, image.tostring()), dtype=np.float64)]

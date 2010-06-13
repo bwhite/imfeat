@@ -17,6 +17,6 @@ private:
   double safe_root(double val, int rpower);
 };
 extern "C" {
-void compute(int channels, int num_pixels, int num_moments, char *data, float *moments);
+void compute(int channels, int num_pixels, int num_moments, char *data, double *moments);
 }
 #endif
