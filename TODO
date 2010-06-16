@@ -1,0 +1,3 @@
+-Add BoF vectors using SURF (opencv), SIFT (vlfeat), and MSER (vlfeat).
+-Add "make_feature_points" support (has XY coordinate as a
+   requirement, optional dict of other things).
