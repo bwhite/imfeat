@@ -5,7 +5,7 @@
 #include <opencv/highgui.h>
 #include <opencv/cv.h>
 
-void compute_derivatives(char *image, int height, int width, double *dy,
+void compute_derivatives(unsigned char *image, int height, int width, double *dy,
 			 double *dx) {
   int i, j;
   int height_m1 = height - 1;
@@ -18,14 +18,43 @@ void compute_derivatives(char *image, int height, int width, double *dy,
     }
 }
 
-inline int compute_orientation_bin(double dy, double dx, int orientation_bins) {
-  const double offset = 1.5707963267948966;
-  double bin_width = 3.1415926535897931 / orientation_bins;
-  return (int)((atan(dy/dx) + offset) / bin_width);
+inline double compute_orientation_bin(double dy, double dx, double bin_width) {
+  printf("angle<%f,%f>\n", fabs(atan2(dy, dx)), atan2(dy, dx));
+  return fabs(atan2(dy, dx)) / bin_width;
 }
 
 inline double compute_gradient_magnitude(double dy, double dx) {
   return sqrt(dy*dy + dx*dx);
+}
+
+inline void update_cell_bins(double *cell_bins, double bin, double mag, int orientation_bins) {
+  int b0, b1;
+  double m0, m1;
+  int bin_floor = floor(bin);
+  int bin_ceil = ceil(bin);
+  double frac = bin - bin_floor;
+  if (frac < .5) {
+    b1 = bin_floor;
+    m0 = .5 - frac;
+    m1 = .5 + frac;
+    if (bin_floor == 0) {
+      b0 = orientation_bins - 1;
+    } else {
+      b0 = bin_floor - 1;
+    }
+  } else {
+    b0 = bin_floor;
+    m0 = 1.5 - frac;
+    m1 = frac - .5;
+    if (bin_ceil == orientation_bins) {
+      b1 = 0;
+    } else {
+      b1 = bin_floor + 1;
+    }
+  }
+  printf("b: %f b0: %d m0: %f b1: %d m1: %f\n", bin, b0, m0, b1, m1);
+  cell_bins[b0] += m0 * mag;
+  cell_bins[b1] += m1 * mag;
 }
 
 void compute_cells(double *dy, double *dx, int height, int width, double *cell_bins,
@@ -33,24 +62,24 @@ void compute_cells(double *dy, double *dx, int height, int width, double *cell_b
 		   int orientation_bins) {
   int i, j, k, l;
   int cell_cnt = 0;
+  double bin_width = 3.1415926535897931 / orientation_bins;
   for (i = 0; i < celly; ++i)
     for (j = 0; j < cellx; ++j, ++cell_cnt) {
       int pixel_origin = (i * width + j) * cell_diameter + width + 1;
       for (k = 0; k < cell_diameter; ++k)
 	for (l = 0; l < cell_diameter; ++l) {
-	  int bin = compute_orientation_bin(dy[pixel_origin + width * k + l],
+	  double bin = compute_orientation_bin(dy[pixel_origin + width * k + l],
 					    dx[pixel_origin + width * k + l],
-					    orientation_bins);
+					    bin_width);
 	  double mag = compute_gradient_magnitude(dy[pixel_origin + width * k + l],
 						  dx[pixel_origin + width * k + l]);
-	  if (i == 1 && j == 1)
-	    printf("Mag:%f\n", mag);
-	  cell_bins[(i * cellx + j) * orientation_bins + bin] += mag;
+	  update_cell_bins(cell_bins + (i * cellx + j) * orientation_bins, bin, mag, orientation_bins);
 	}
     }
 }
 
-void compute_hog(char *image, int height, int width, double *desc) {
+void compute_hog(unsigned char *image, int height, int width, double *desc) {
+  // TODO Allow signed orientation angles
   int size = height * width;
   int cell_diameter = 6;
   int block_diameter = 3;
@@ -61,9 +90,11 @@ void compute_hog(char *image, int height, int width, double *desc) {
   int celly = (height - 2) / cell_diameter;
   int blockx = cellx / block_diameter;
   int blocky = celly / block_diameter;
+  printf("cellx: %d celly: %d blockx: %d blocky: %d num_bins: %d\n", cellx, celly, blockx, blocky, celly * cellx * orientation_bins);
   dy = malloc((sizeof *dy) * size);
   dx = malloc((sizeof *dx) * size);
   cell_bins = malloc((sizeof *cell_bins) * celly * cellx * orientation_bins);
+  memset(cell_bins, 0, (sizeof *cell_bins) * celly * cellx * orientation_bins);
   compute_derivatives(image, height, width, dy, dx);
   compute_cells(dy, dx, height, width, cell_bins, celly, cellx, cell_diameter, orientation_bins);
 
@@ -73,20 +104,44 @@ void compute_hog(char *image, int height, int width, double *desc) {
 }
 
 void experiment(int height, int width) {
-  char *image;
+  unsigned char *image;
   image = malloc((sizeof *image) * height * width);
   memset(image, 0, (sizeof *image) * height * width);
   compute_hog(image, height, width, 0);
   free(image);
 }
 
-int main() {
+void print_ipl(IplImage *im) {
+  printf("H:%d W:%d Ws:%d Chan:%d\n", im->height, im->width, im->widthStep, im->nChannels);
+}
+
+unsigned char* compact_gray_ipl(IplImage *im) {
   int i, j;
-  cvLoadImage("test.jpg", CV_LOAD_IMAGE_COLOR);
-  for (i = 0; i < 50; i++)
-    for (j = 0; j < 50; j++) {
+  unsigned char *image;
+  image = malloc(sizeof *image * im->height * im->width);
+  for (i = 0; i < im->height; ++i) {
+    for (j = 0; j < im->width; ++j)
+      image[i * im->width + j] = im->imageData[i * im->widthStep + j];
+  }
+  return image;
+}
+
+void image_test(char * image_path) {
+  IplImage *im = cvLoadImage(image_path, CV_LOAD_IMAGE_GRAYSCALE);
+  print_ipl(im);
+  unsigned char *image = compact_gray_ipl(im);
+  compute_hog(image, im->height, im->width, 0);
+}
+
+int main() {
+  image_test("rand_grad.png");
+  /*
+  int i, j;
+  for (i = 0; i < 25; i++)
+    for (j = 0; j < 25; j++) {
       experiment(i, j);
     }
+  */
   return 0;
 }
 
@@ -97,7 +152,5 @@ int main() {
    Orientation Bins: 9 in 0 to pi
 
 TODO
-Generate synthetic images
-Load images and verify operation
 Perform block normalization
 */
