@@ -1,11 +1,9 @@
 import numpy as np
 import Image
 
-cell_dia = 9
-cells = 20
+pix_height = 6*100 + 2
+pix_width = 6*100  + 2
 
-pix_height = cells * cell_dia + 2
-pix_width = cell_dia + 2
 img = np.zeros((pix_height, pix_width), dtype=np.uint8)
 
 def save_img(img, fn):
