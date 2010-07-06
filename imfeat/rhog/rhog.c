@@ -43,7 +43,7 @@ static inline void update_cell_bins(double *cell_bins, double bin, double mag,
     b0 = bin_floor;
     m0 = 1.5 - frac;
     m1 = frac - .5;
-    if (bin_ceil == orientation_bins) {
+    if (bin_ceil + 1 >= orientation_bins) {
       b1 = 0;
     } else {
       b1 = bin_floor + 1;
@@ -66,10 +66,13 @@ static void compute_cells(double *dy, double *dx, int height, int width,
 	  double bin = compute_orientation_bin(dy[pixel_origin + width * k + l],
 					    dx[pixel_origin + width * k + l],
 					    bin_width);
+	  // Returned bin is [0, orient] and we make it [0, orient)
+	  if (bin >= orientation_bins)
+	    bin = 0;
 	  double mag = compute_gradient_magnitude(dy[pixel_origin + width * k + l],
 						  dx[pixel_origin + width * k + l]);
 	  update_cell_bins(cell_bins + (i * cellx + j) * orientation_bins, bin, mag,
-			   orientation_bins);
+	  		   orientation_bins);
 	}
     }
 }
@@ -124,9 +127,9 @@ void compute_hog(unsigned char *image, int height, int width, double *block_bins
   compute_derivatives(image, height, width, dy, dx);
   compute_cells(dy, dx, height, width, cell_bins, celly, cellx, cell_diameter, orientation_bins);
   compute_blocks(cell_bins, celly, cellx, block_bins, block_diameter, orientation_bins);
-  free(dy);
-  free(dx);
   free(cell_bins);
+  free(dx);
+  free(dy);
 }
 
 

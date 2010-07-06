@@ -1,8 +1,8 @@
 import numpy as np
 import Image
 
-pix_height = 6*100 + 2
-pix_width = 6*100  + 2
+pix_height = 38
+pix_width = 15
 
 img = np.zeros((pix_height, pix_width), dtype=np.uint8)
 

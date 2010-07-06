@@ -4,7 +4,7 @@ import Image
 
 from . import __path__
 
-MODES = ['RGB']
+MODES = ['L']
 
 # Required Types
 _char_ptr = ctypes.POINTER(ctypes.c_char)
@@ -19,13 +19,12 @@ _shlib.compute_hog.restype = ctypes.c_int
 _shlib.compute_hog.argtypes = [_char_ptr, _int, _int, _double_ptr, _int, _int, _int]
 
 def _compute(image, cell_diameter, block_diameter, orientation_bins):
-    height = image.size[1]
-    width = image.size[0]
-    celly = (height - 2)
-    cellx = (width - 2)
-    block_bins = np.zeros((celly - block_diameter + 1) *
-                          (cellx - block_diameter + 1) * block_diameter *
-                          block_diameter * orientation_bins, dtype=np.float64)
+    height = image.size[1] 
+    width = image.size[0] 
+    celly = (height - 2) // cell_diameter
+    cellx = (width - 2) // cell_diameter
+    nblock_bins = (celly - block_diameter + 1) * (cellx - block_diameter + 1) * block_diameter * block_diameter * orientation_bins
+    block_bins = np.zeros(nblock_bins, dtype=np.float64)
     _shlib.compute_hog(image.tostring(),
                        height,
                        width,
@@ -33,11 +32,9 @@ def _compute(image, cell_diameter, block_diameter, orientation_bins):
                        cell_diameter,
                        block_diameter,
                        orientation_bins)
-    return block_bins
+    return [block_bins]
 
 
-def make_features(image, num_moments=2):
-    return [_compute(image,
-                     6,
-                     3,
-                     9)]
+def make_features(image, cell_diameter=6, block_diameter=3, orientation_bins=9):
+    val = _compute(image, cell_diameter, block_diameter, orientation_bins)
+    return val

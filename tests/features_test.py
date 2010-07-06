@@ -33,7 +33,12 @@ class Test(unittest.TestCase):
         for feature_module in dir(imfeat):
             if 'make_features' in dir(getattr(imfeat, feature_module)):
                 print(feature_module)
-                print(imfeat.compute(getattr(imfeat, feature_module), lena))
+                val = imfeat.compute(getattr(imfeat, feature_module), lena)
+                try:
+                    print(len(val[0]))
+                except IndexError:
+                    pass
+                print(val)
 
 if __name__ == '__main__':
     unittest.main()

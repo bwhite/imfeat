@@ -3,5 +3,5 @@ env = Environment()
 env.Replace(CXX = 'g++')
 env.Append(CCFLAGS =  '-O3 -Wall -g')
 
-env.SharedLibrary('lib/rhog',['rhog.c'])
+env.SharedLibrary('lib/rhog',['rhog.c'], LIBS=['m'])
 env.Program(['rhog.c', 'rhog_test.c'], LIBS=['m', 'highgui'])
