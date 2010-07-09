@@ -1,7 +1,3 @@
-import distutils.sysconfig
-env = Environment()
-env.Replace(CXX = 'g++')
-env.Append(CCFLAGS =  '-O3 -Wall -g')
-
+Import('env')
 env.SharedLibrary('lib/rhog',['rhog.c'], LIBS=['m'])
 env.Program(['rhog.c', 'rhog_test.c'], LIBS=['m', 'highgui'])
