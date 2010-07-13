@@ -1,7 +1,7 @@
 import distutils.sysconfig
 env = Environment()
 env.Replace(CXX = 'g++')
-env.Append(CCFLAGS =  '-O3 -Wall')
+env.Append(CCFLAGS =  '-O3 -Wall -fPIC')
 
 exp = ['env']
 SConscript('imfeat/moments/SConstruct', exp)
