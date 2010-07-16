@@ -86,8 +86,8 @@ static void compute_blocks(double *cell_bins, int celly, int cellx,
   int cellx_up = cellx - block_diameter;
   int block_start, next_block = 0;
   double sum_sqr, norm_val;
-  for (i = 0; i <= celly_up; ++i) {
-    for (j = 0; j <= cellx_up; ++j) {
+  for (i = 0; i <= celly_up; i+= block_diameter) {
+    for (j = 0; j <= cellx_up; j+= block_diameter) {
       block_start = next_block;
       sum_sqr = eps;
       for (k = 0; k < block_diameter; ++k)

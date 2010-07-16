@@ -23,7 +23,11 @@ def _compute(image, cell_diameter, block_diameter, orientation_bins):
     width = image.size[0] 
     celly = (height - 2) // cell_diameter
     cellx = (width - 2) // cell_diameter
-    nblock_bins = (celly - block_diameter + 1) * (cellx - block_diameter + 1) * block_diameter * block_diameter * orientation_bins
+    # For 1 cell stride
+    #nblock_bins = (celly - block_diameter + 1) * (cellx - block_diameter + 1) * block_diameter * block_diameter * orientation_bins
+    # For 3 cell stride
+    nblock_bins = (celly // block_diameter) * (cellx // block_diameter) * orientation_bins * block_diameter * block_diameter
+    #print('cellx[%f] celly[%f] height[%f] width[%f] nblock_bins[%f]' % (cellx, celly, height, width, nblock_bins))
     block_bins = np.zeros(nblock_bins, dtype=np.float64)
     _shlib.compute_hog(image.tostring(),
                        height,
