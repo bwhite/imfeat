@@ -24,9 +24,9 @@ def _compute(image, cell_diameter, block_diameter, orientation_bins):
     celly = (height - 2) // cell_diameter
     cellx = (width - 2) // cell_diameter
     # For 1 cell stride
-    #nblock_bins = (celly - block_diameter + 1) * (cellx - block_diameter + 1) * block_diameter * block_diameter * orientation_bins
+    nblock_bins = (celly - block_diameter + 1) * (cellx - block_diameter + 1) * block_diameter * block_diameter * orientation_bins
     # For 3 cell stride
-    nblock_bins = (celly // block_diameter) * (cellx // block_diameter) * orientation_bins * block_diameter * block_diameter
+    #nblock_bins = (celly // block_diameter) * (cellx // block_diameter) * orientation_bins * block_diameter * block_diameter
     #print('cellx[%f] celly[%f] height[%f] width[%f] nblock_bins[%f]' % (cellx, celly, height, width, nblock_bins))
     block_bins = np.zeros(nblock_bins, dtype=np.float64)
     _shlib.compute_hog(image.tostring(),
@@ -39,6 +39,6 @@ def _compute(image, cell_diameter, block_diameter, orientation_bins):
     return [block_bins]
 
 
-def make_features(image, cell_diameter=6, block_diameter=3, orientation_bins=9):
+def make_features(image, cell_diameter=8, block_diameter=3, orientation_bins=9):
     val = _compute(image, cell_diameter, block_diameter, orientation_bins)
     return val

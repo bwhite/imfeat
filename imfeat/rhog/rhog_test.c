@@ -1,6 +1,7 @@
 #include <opencv/highgui.h>
 #include <opencv/cv.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "rhog.h"
 
 double * alloc_block_bins(int celly, int cellx, int block_diameter, int orientation_bins) {
@@ -37,6 +38,7 @@ void image_test(char *image_path) {
   print_ipl(im);
   compute_hog(image, im->height, im->width, block_bins, cell_diameter, block_diameter, orientation_bins);
   cvReleaseImage(&im);
+  free(block_bins);
   free(image);
 }
 
