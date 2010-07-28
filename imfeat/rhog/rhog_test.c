@@ -31,7 +31,7 @@ unsigned char* compact_gray_ipl(IplImage *im) {
 void image_test(char *image_path) {
   IplImage *im = cvLoadImage(image_path, CV_LOAD_IMAGE_GRAYSCALE);
   unsigned char *image = compact_gray_ipl(im);
-  int cell_diameter = 6, block_diameter = 3, orientation_bins = 9, cellx, celly;
+  int cell_diameter = 8, block_diameter = 2, orientation_bins = 9, cellx, celly;
   double *block_bins;
   compute_cells(im->width, im->height, cell_diameter, &cellx, &celly);
   block_bins = alloc_block_bins(celly, cellx, block_diameter, orientation_bins);
