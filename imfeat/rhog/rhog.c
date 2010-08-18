@@ -1,7 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 
 static void compute_derivatives(unsigned char *image, int height, int width,
 			 double *dy, double *dx) {
@@ -14,21 +13,6 @@ static void compute_derivatives(unsigned char *image, int height, int width,
       dy[ind] = image[ind + width] - image[ind - width];
       dx[ind] = image[ind + 1] - image[ind - 1];
     }
-  /* Make a black border around the image */
-  memset(dy, 0, sizeof(double) * width);
-  memset(dx, 0, sizeof(double) * width);
-  memset(dy + height_m1 * width, 0, sizeof(double) * width);
-  memset(dx + height_m1 * width, 0, sizeof(double) * width);
-  {
-    int ind0 = width;
-    int ind1 = 2 * width - 1;
-    for (i = 1; i < height_m1; ++i, ind0 += width, ind1 += width) {
-      dy[ind0] = 0.;
-      dx[ind0] = 0.;
-      dy[ind1] = 0.;
-      dx[ind1] = 0.;
-    }
-  }
 }
 
 static inline double compute_orientation_bin(double dy, double dx, double bin_width) {
@@ -76,7 +60,7 @@ static void compute_cells(double *dy, double *dx, int height, int width,
   double bin_width = 3.1415926535897931 / orientation_bins;
   for (i = 0; i < celly; ++i)
     for (j = 0; j < cellx; ++j) {
-      int pixel_origin = (i * width + j) * cell_diameter;
+      int pixel_origin = (i * width + j) * cell_diameter + width + 1;
       for (k = 0; k < cell_diameter; ++k)
 	for (l = 0; l < cell_diameter; ++l) {
 	  double bin = compute_orientation_bin(dy[pixel_origin + width * k + l],
@@ -135,8 +119,8 @@ void compute_hog(unsigned char *image, int height, int width, double *block_bins
   
   double *dx, *dy;
   double *cell_bins; // [y][x][bin]
-  int cellx = width / cell_diameter;
-  int celly = height / cell_diameter;
+  int cellx = (width - 2) / cell_diameter;
+  int celly = (height - 2) / cell_diameter;
   dy = malloc((sizeof *dy) * size);
   dx = malloc((sizeof *dx) * size);
   cell_bins = calloc(celly * cellx * orientation_bins, sizeof *cell_bins);
@@ -150,9 +134,11 @@ void compute_hog(unsigned char *image, int height, int width, double *block_bins
 
 static void max_derivatives(double *dyr, double *dxr, double *dyg, double *dxg, double *dyb, double *dxb, int height, int width) {
   int i, j;
+  int height_m1 = height - 1;
+  int width_m1 = width - 1;
   double mag_r, mag_g, mag_b;
-  for (i = 0; i < height; ++i)
-    for (j = 0; j < width; ++j) {
+  for (i = 1; i < height_m1; ++i)
+    for (j = 1; j < width_m1; ++j) {
       int ind = i * width + j;
       mag_r = dyr[ind] * dyr[ind] + dxr[ind] * dxr[ind];
       mag_g = dyg[ind] * dyg[ind] + dxg[ind] * dxg[ind];
@@ -180,8 +166,8 @@ void compute_hog_rgb(unsigned char *imager, unsigned char *imageg, unsigned char
   
   double *dxr, *dyr, *dxg, *dyg, *dxb, *dyb;
   double *cell_bins; // [y][x][bin]
-  int cellx = width / cell_diameter;
-  int celly = height / cell_diameter;
+  int cellx = (width - 2) / cell_diameter;
+  int celly = (height - 2) / cell_diameter;
   dyr = malloc((sizeof *dyr) * size);
   dxr = malloc((sizeof *dxr) * size);
   dyg = malloc((sizeof *dyg) * size);
