@@ -29,3 +29,30 @@ int compute_surf_descriptors(char *data, int height, int width, int max_points, 
   SurfDetect::freePoints(&sp);
   return total_points;
 }
+
+int compute_surf_points(char *data, int height, int width, int max_points, float *points, int *x, int *y, int *scale, float *orientation, bool *sign, float *cornerness) {
+  int total_points = 0;
+  IntegralImage intim(data, height, width);
+  std::list<SurfPoint*> *sp = SurfDetect::allocPoints();
+  SurfDetect sdet(height, width);
+  sdet.compute(sp, &intim);
+  SurfDescribe *sdesc = new SurfDescribe();
+  sdesc->compute(sp, &intim);
+  int feature_bytes = sizeof(float) * 64;
+  sp->sort(cmp_surf_point);
+  for (std::list<SurfPoint*>::iterator iter = sp->begin(); iter != sp->end(); ++iter, ++total_points) {
+    if (total_points >= max_points)
+      break;
+    memcpy(points, (*iter)->features64, feature_bytes);
+    points += 64;
+    *(x++) = (*iter)->x;
+    *(y++) = (*iter)->y;
+    *(scale++) = (*iter)->scale;
+    *(orientation++) = (*iter)->orientation;
+    *(sign++) = (*iter)->sign;
+    *(cornerness++) = (*iter)->cornerness;
+  }
+  delete sdesc;
+  SurfDetect::freePoints(&sp);
+  return total_points;
+}

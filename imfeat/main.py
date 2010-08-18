@@ -39,3 +39,23 @@ def compute(feature_module, image, *args, **kw):
     except AttributeError:
         pass
     return feature_module.make_features(image, *args, **kw)
+
+def compute_points(feature_module, image, *args, **kw):
+    """Compute feature points while performing conversions and checks.
+
+    Args:
+        feature_module: A module that has a make_features function.
+        image: A PIL image.
+        args: Optional positional arguments to be passed on.
+        kw: Optional keyword arguments to be passed on.
+
+    Returns:
+        Feature computation output.
+    """
+
+    try:
+        if image.mode not in feature_module.MODES:
+            image = image.convert(feature_module.MODES[0])
+    except AttributeError:
+        pass
+    return feature_module.make_points(image, *args, **kw)

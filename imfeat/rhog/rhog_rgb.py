@@ -21,8 +21,8 @@ _shlib.compute_hog_rgb.argtypes = [_char_ptr, _char_ptr, _char_ptr, _int, _int, 
 def _compute(image, cell_diameter, block_diameter, orientation_bins):
     height = image.size[1] 
     width = image.size[0] 
-    celly = height // cell_diameter
-    cellx = width // cell_diameter
+    celly = (height - 2) // cell_diameter
+    cellx = (width - 2) // cell_diameter
     nblock_bins = (celly - block_diameter + 1) * (cellx - block_diameter + 1) * block_diameter * block_diameter * orientation_bins
     #nblock_bins = (celly // block_diameter) * (cellx // block_diameter) * orientation_bins * block_diameter * block_diameter
     block_bins = np.zeros(nblock_bins, dtype=np.float64)

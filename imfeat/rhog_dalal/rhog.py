@@ -22,15 +22,10 @@ def make_features(image, fn=None, options=None):
         image.save(img_fn)
     desc_fd, desc_fn = tempfile.mkstemp(suffix='.rhog.desc')
     mat_fd, mat_fn = tempfile.mkstemp(suffix='.rhog.mat.desc')
-    print('start1')
     cmd = '%s/dump_rhog %s --infile %s --outfile %s' % (__path__[0], param, img_fn, desc_fn)
     subprocess.call(cmd.split())
-    print('done1')
-    print(desc_fn)
-    return 
     cmd = '%s/dump4svmlearn -p %s --outfile %s -f BiMatlab' % (__path__[0], desc_fn, mat_fn)
     subprocess.call(cmd.split())
-    print('done2')
     out = [np.fromstring(os.fdopen(mat_fd).read()[12:], dtype=np.float32)]
     def cls(fd, fn):
         if fd == None:
