@@ -1,0 +1,3 @@
+Import('env')
+exp = ['env']
+env.SharedLibrary('lib/surf_feature', ['surf_feature.cpp', 'SurfDetect.cpp', 'SurfDescribe.cpp', 'SurfPoint.cpp', 'integral_image/IntegralImage.cpp'])
