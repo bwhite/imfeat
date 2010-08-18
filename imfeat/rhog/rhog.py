@@ -21,8 +21,8 @@ _shlib.compute_hog.argtypes = [_char_ptr, _int, _int, _double_ptr, _int, _int, _
 def _compute(image, cell_diameter, block_diameter, orientation_bins):
     height = image.size[1] 
     width = image.size[0] 
-    celly = (height - 2) // cell_diameter
-    cellx = (width - 2) // cell_diameter
+    celly = (height) // cell_diameter
+    cellx = (width) // cell_diameter
     # For 1 cell stride
     nblock_bins = (celly - block_diameter + 1) * (cellx - block_diameter + 1) * block_diameter * block_diameter * orientation_bins
     # For 3 cell stride
@@ -39,6 +39,6 @@ def _compute(image, cell_diameter, block_diameter, orientation_bins):
     return [block_bins]
 
 
-def make_features(image, cell_diameter=8, block_diameter=3, orientation_bins=9):
+def make_features(image, cell_diameter=8, block_diameter=2, orientation_bins=9):
     val = _compute(image, cell_diameter, block_diameter, orientation_bins)
     return val
