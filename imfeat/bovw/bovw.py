@@ -38,9 +38,9 @@ class BoVW(object):
         self.clusters = np.asfarray(clusters)
 
     def make_features(self, image):
-        bovw = np.zeros(len(clusters), dtype=np.int32)
-        for feat in image_feature.make_features(image):
-            bovw[self.dist.nn(feat)[1]] += 1
+        bovw = np.zeros(len(self.clusters), dtype=np.int32)
+        for feat in self.image_feature.make_features(image):
+            bovw[self.dist.nn(self.clusters, feat)[1]] += 1
         bovw = np.array(bovw, dtype=np.double)
-        bovw = normalize(bovw)
-        return [bovw]
+        return [self.normalize(bovw)]
+    
