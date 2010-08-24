@@ -29,6 +29,7 @@ def make_features(image, max_points=1000):
                                         max_points,
                                         points.ctypes.data_as(_float_ptr))
     return points[:num_pts]
+
 if __name__ == "__main__":
     import time
     tests = ['lena.png']

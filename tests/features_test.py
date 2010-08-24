@@ -34,6 +34,7 @@ class Test(unittest.TestCase):
             if 'make_features' in dir(getattr(imfeat, feature_module)):
                 print(feature_module)
                 val = imfeat.compute(getattr(imfeat, feature_module), lena)
+                print(len(val))
                 try:
                     print(len(val[0]))
                 except IndexError:
