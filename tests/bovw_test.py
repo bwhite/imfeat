@@ -31,7 +31,7 @@ class Test(unittest.TestCase):
     def test_0(self):
         with open('surf_clusters.pkl') as clusters_fp:
             clusters = pickle.load(clusters_fp)
-        normalize = lambda x: x / np.linalg.norm(x)
+        normalize = lambda x: x# / np.linalg.norm(x)
         bovw = imfeat.BoVW(imfeat.surf_random, distpy.L2Sqr(), normalize, clusters)
         lena = Image.open('lena.jpg')
         print(bovw.make_features(lena))
