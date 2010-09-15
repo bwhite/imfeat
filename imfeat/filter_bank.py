@@ -2,7 +2,6 @@ import numpy as np
 import scipy as sp
 import scipy.signal
 import Image
-from . import __path__
 
 MODES = ['L']
 _filters = None

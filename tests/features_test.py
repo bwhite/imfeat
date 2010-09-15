@@ -36,9 +36,12 @@ class Test(unittest.TestCase):
             if isinstance(mod, types.TypeType):
                 print('Skipping [%s] as it is a class' % feature_module)
                 continue
+            if feature_module == 'rhog_dalal':
+                print('Skipping [%s] as it is unsupported' % feature_module)
+                continue
             if 'make_features' in dir(mod):
                 print(feature_module)
-                val = imfeat.compute(mod, lena)
+                val = np.asfarray(imfeat.compute(mod, lena))
                 print(len(val))
                 try:
                     print(len(val[0]))
