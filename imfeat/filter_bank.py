@@ -1,11 +1,13 @@
 import numpy as np
 import warnings
+import multiprocessing
 from scipy.signal import convolve2d
 
 MODES = ['L']
 _filters = None
 _filter_func = None
 _params = None
+_pool = None
 
 
 def gabor_schmid(tau=2, sigma=1, radius=5):
@@ -45,7 +47,9 @@ def _make_default():
 
 
 def _setup(filter_func, params):
-    global _filters, _filter_func, _params
+    global _filters, _filter_func, _params, _pool
+    if _pool == None:
+        _pool = multiprocessing.Pool()
     if _filters != None and filter_func == _filter_func and params == _params:
         return
     if filter_func == None and params == None:
@@ -56,6 +60,12 @@ def _setup(filter_func, params):
     for x in _filters[1:]:  # We assume all filters are the same shape
         assert(_filters[0].shape == x.shape)
 
+def _convolve(image_filt):
+    image, filt = image_filt
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        return convolve2d(image, filt, 'valid').ravel()
+    
 
 def make_features(image, filter_func=None, params=None):
     _setup(filter_func, params)
@@ -64,5 +74,6 @@ def make_features(image, filter_func=None, params=None):
         warnings.simplefilter("ignore")
         convs = [convolve2d(image, filt, 'valid').ravel()
                  for filt in _filters]
-    convs = [np.asfarray(x) for x in zip(*convs)]
+    convs = _pool.map(_convolve, zip([image] * len(_filters), _filters))
+    convs = np.asfarray([x for x in zip(*convs)])
     return convs
