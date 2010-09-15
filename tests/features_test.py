@@ -22,6 +22,7 @@ import unittest
 
 import numpy as np
 import Image
+import types
 
 import imfeat
 
@@ -31,9 +32,13 @@ class Test(unittest.TestCase):
         # Find all features
         lena = Image.open('lena.jpg')
         for feature_module in dir(imfeat):
-            if 'make_features' in dir(getattr(imfeat, feature_module)):
+            mod = getattr(imfeat, feature_module)
+            if isinstance(mod, types.TypeType):
+                print('Skipping [%s] as it is a class' % feature_module)
+                continue
+            if 'make_features' in dir(mod):
                 print(feature_module)
-                val = imfeat.compute(getattr(imfeat, feature_module), lena)
+                val = imfeat.compute(mod, lena)
                 print(len(val))
                 try:
                     print(len(val[0]))

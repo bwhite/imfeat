@@ -1,12 +1,42 @@
 import numpy as np
+import scipy as sp
+import scipy.signal
 import Image
-from imfeat.filter_bank.gabor import gabor_schmid
 from . import __path__
 
 MODES = ['L']
 _filters = None
 _filter_func = None
 _params = None
+
+
+def gabor_schmid(tau=2, sigma=1, radius=5):
+    """Gabor-like filter maker
+    
+    From "Constructing models for content-based image retrieval"
+    
+    Args:
+        tau: Controls frequency
+        sigma: Controls gaussian size
+        radius: Controls the finals size of the filter, 2*radius+1
+
+    Returns:
+        Numpy array holding the filter
+    """
+    tau = float(tau)
+    sigma = float(sigma)
+    sz = 2 * radius + 1
+    x, y = np.meshgrid(range(-radius, sz - radius),
+                       range(-radius, sz - radius))
+    x *= x
+    y *= y
+    x += y
+    out = np.exp(-x / (2. * sigma * sigma))
+    out *= np.cos(np.pi * tau * np.sqrt(x) / sigma)
+    out -= np.mean(out.ravel())
+    out /= np.std(out.ravel())
+    return out
+
 
 def _make_default():
     filter_func = gabor_schmid
@@ -36,13 +66,3 @@ def make_features(image, filter_func=None, params=None):
              for filt in _filters]
     convs = [np.asfarray(x) for x in zip(*convs)]
     return convs
-
-
-if __name__ == "__main__":
-    import time
-    tests = ['lena.png']
-    for test in tests:
-        im = Image.open(test)
-        st = time.time()
-        print(make_features(im))
-        print(time.time() - st)
