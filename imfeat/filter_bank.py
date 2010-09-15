@@ -1,7 +1,6 @@
 import numpy as np
-import scipy as sp
-import scipy.signal
-import Image
+import warnings
+from scipy.signal import convolve2d
 
 MODES = ['L']
 _filters = None
@@ -46,7 +45,7 @@ def _make_default():
 
 
 def _setup(filter_func, params):
-    global _filters
+    global _filters, _filter_func, _params
     if _filters != None and filter_func == _filter_func and params == _params:
         return
     if filter_func == None and params == None:
@@ -61,7 +60,9 @@ def _setup(filter_func, params):
 def make_features(image, filter_func=None, params=None):
     _setup(filter_func, params)
     image = np.asfarray(image)
-    convs = [sp.signal.convolve2d(image, filt, 'valid').ravel()
-             for filt in _filters]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        convs = [convolve2d(image, filt, 'valid').ravel()
+                 for filt in _filters]
     convs = [np.asfarray(x) for x in zip(*convs)]
     return convs
