@@ -1,3 +1,25 @@
+#!/usr/bin/env python
+# (C) Copyright 2010 Brandyn A. White
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""Generates filter_bank features
+"""
+
+__author__ = 'Brandyn A. White <bwhite@cs.umd.edu>'
+__license__ = 'GPL V3'
+
 import numpy as np
 import warnings
 import multiprocessing
@@ -12,9 +34,9 @@ _pool = None
 
 def gabor_schmid(tau=2, sigma=1, radius=5):
     """Gabor-like filter maker
-    
+
     From "Constructing models for content-based image retrieval"
-    
+
     Args:
         tau: Controls frequency
         sigma: Controls gaussian size
@@ -60,20 +82,20 @@ def _setup(filter_func, params):
     for x in _filters[1:]:  # We assume all filters are the same shape
         assert(_filters[0].shape == x.shape)
 
+
 def _convolve(image_filt):
     image, filt = image_filt
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         return convolve2d(image, filt, 'valid').ravel()
-    
 
-def make_features(image, filter_func=None, params=None):
+
+def _make_convs(image, filter_func=None, params=None):
     _setup(filter_func, params)
     image = np.asfarray(image)
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        convs = [convolve2d(image, filt, 'valid').ravel()
-                 for filt in _filters]
-    convs = _pool.map(_convolve, zip([image] * len(_filters), _filters))
-    convs = np.asfarray([x for x in zip(*convs)])
-    return convs
+    return _pool.map(_convolve, zip([image] * len(_filters), _filters))
+
+
+def make_features(image, filter_func=None, params=None):
+    convs = _make_convs(image, filter_func, params)
+    return np.asfarray([x for x in zip(*convs)])
