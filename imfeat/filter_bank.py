@@ -62,9 +62,12 @@ def gabor_schmid(tau=2, sigma=1, radius=5):
 
 def _make_default():
     filter_func = gabor_schmid
-    params = ({'tau': t, 'sigma': s} 
+    params = ({'tau': t, 'sigma': s, 'radius': 20}
               for t in range(1, 8)
-              for s in range(1, 5))
+              for s in range(5, 10))
+    #params = ({'tau': t, 'sigma': s} 
+    #          for t in range(1, 8)
+    #          for s in range(1, 5))
     return filter_func, params
 
 
@@ -87,7 +90,7 @@ def _convolve(image_filt):
     image, filt = image_filt
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        return convolve2d(image, filt, 'valid').ravel()
+        return convolve2d(image, filt, 'valid')
 
 
 def _make_convs(image, filter_func=None, params=None):
@@ -98,4 +101,54 @@ def _make_convs(image, filter_func=None, params=None):
 
 def make_features(image, filter_func=None, params=None):
     convs = _make_convs(image, filter_func, params)
+    convs = [x.ravel() for x in convs]
     return np.asfarray([x for x in zip(*convs)])
+
+
+def make_texton(image, dist, clusters, filter_func=None, params=None):
+    """Generates a texton image.
+
+    Args:
+        image: PIL Image
+        dist: Has a nn method
+        clusters: A list-like object of real-valued list-like objects
+        filter_func: Function that produces a filter given an entry in params
+        params: A set of filter parameters
+
+    Returns:
+        2D numpy array of texton indeces
+    """
+    convs = _make_convs(image, filter_func, params)
+    shape = convs[0].shape
+    convs = np.asfarray(convs)
+    texton = np.zeros(shape)
+    for i in range(shape[0]):
+        for j in range(shape[1]):
+            texton[i, j] = dist.nn(clusters, convs[:, i, j])[1]
+    return texton 
+
+def _demo():
+    import distpy
+    import pickle
+    import Image
+    import glob
+    import random
+    import os
+    import matplotlib.pyplot as mp
+    clust_fn = '/home/brandyn/projects/constrained_visual_analysis/box_seg_classifier/cluster/vocab_filter.pkl25'
+    image_fns = glob.glob('/home/brandyn/data/msrc/working/MSRC_ObjCategImageDatabase_v2/Images/*.bmp')
+    out_dir = '/home/brandyn/playground/texton/'
+    try:
+        os.makedirs(out_dir)
+    except OSError:
+        pass
+    for image_fn in image_fns:
+        clust = pickle.load(open(clust_fn))
+        image = Image.open(image_fn).convert('L')
+        mp.clf()
+        mp.imshow(make_texton(image, distpy.L2Sqr(), clust))
+        mp.savefig(out_dir + os.path.basename(image_fn) + '.png')
+        
+if __name__ == '__main__':
+    _demo()
+    
