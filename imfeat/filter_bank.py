@@ -65,9 +65,6 @@ def _make_default():
     params = ({'tau': t, 'sigma': s, 'radius': 20}
               for t in range(1, 8)
               for s in range(5, 10))
-    #params = ({'tau': t, 'sigma': s} 
-    #          for t in range(1, 8)
-    #          for s in range(1, 5))
     return filter_func, params
 
 
@@ -135,7 +132,7 @@ def _demo():
     import random
     import os
     import matplotlib.pyplot as mp
-    clust_fn = '/home/brandyn/projects/constrained_visual_analysis/box_seg_classifier/cluster/vocab_filter.pkl25'
+    clust_fn = '/home/brandyn/projects/constrained_visual_analysis/box_seg_classifier/cluster/vocab_filter.pkl99'
     image_fns = glob.glob('/home/brandyn/data/msrc/working/MSRC_ObjCategImageDatabase_v2/Images/*.bmp')
     out_dir = '/home/brandyn/playground/texton/'
     try:

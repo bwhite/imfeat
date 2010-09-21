@@ -22,6 +22,7 @@ _surf.compute_surf_random.argtypes = [_char_ptr, _int, _int, _int, _float_ptr]
 
 def make_features(image, max_points=1000):
     width, height = image.size
+    max_points = min(max_points, height * width)
     points = np.ascontiguousarray(np.zeros((max_points, 64), dtype=np.float32))
     num_pts = _surf.compute_surf_random(image.tostring(),
                                         height,
