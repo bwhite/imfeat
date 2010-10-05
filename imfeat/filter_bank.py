@@ -23,7 +23,7 @@ __license__ = 'GPL V3'
 import numpy as np
 import warnings
 import multiprocessing
-from scipy.signal import convolve2d
+from scipy.signal import convolve2d, fftconvolve
 
 MODES = ['L']
 _filters = None
@@ -87,8 +87,7 @@ def _convolve(image_filt):
     image, filt = image_filt
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        return convolve2d(image, filt, 'valid')
-
+        return fftconvolve(image, filt, 'valid')#
 
 def _make_convs(image, filter_func=None, params=None):
     _setup(filter_func, params)
@@ -146,6 +145,6 @@ def _demo():
         mp.imshow(make_texton(image, distpy.L2Sqr(), clust))
         mp.savefig(out_dir + os.path.basename(image_fn) + '.png')
         
-if __name__ == '__main__':
-    _demo()
+#if __name__ == '__main__':
+#    _demo()
     
