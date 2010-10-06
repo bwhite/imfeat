@@ -103,7 +103,7 @@ def _centered(arr, newsize):
     myslice = [slice(startind[k], endind[k]) for k in range(len(endind))]
     return arr[tuple(myslice)]
 
-def fftconvolve_cache(in1, in2, mode="full", cache=None):
+def fftconvolve_cache(in1, in2, mode="full", cache1=None, cache2=None):
     """Convolve two N-dimensional arrays using FFT. See convolve.
 
     Modified by Brandyn: Uses a cache for the second arg to prevent
@@ -112,21 +112,25 @@ def fftconvolve_cache(in1, in2, mode="full", cache=None):
     """
     s1 = np.array(in1.shape)
     s2 = np.array(in2.shape)
-    complex_result = (np.issubdtype(in1.dtype, np.complex) or
-                      np.issubdtype(in2.dtype, np.complex))
+    complex_result = False
     size = s1+s2-1
 
     # Always use 2**n-sized FFT
     fsize = 2**np.ceil(np.log2(size))
     fsize_k = tuple(fsize.tolist())
-    IN1 = fftn(in1,fsize)
     # Brandyn: Start Mod
-    cache = {} if cache == None else cache
+    cache1 = {} if cache1 == None else cache1
+    cache2 = {} if cache2 == None else cache2
     try:
-        IN1 *= cache[fsize_k]
+        IN1 = cache1[fsize_k]
     except KeyError:
-        cache[fsize_k] = fftn(in2,fsize)
-        IN1 *= cache[fsize_k]
+        cache1[fsize_k] = fftn(in1,fsize)
+        IN1 = cache1[fsize_k]
+    try:
+        IN1 *= cache2[fsize_k]
+    except KeyError:
+        cache2[fsize_k] = fftn(in2,fsize)
+        IN1 *= cache2[fsize_k]
     # Brandyn: End Mod
     fslice = tuple([slice(0, int(sz)) for sz in size])
     ret = ifftn(IN1)[fslice].copy()
@@ -145,17 +149,19 @@ def fftconvolve_cache(in1, in2, mode="full", cache=None):
         return _centered(ret,abs(s2-s1)+1)
 
 
-def _convolve(image, filt_cache):
-    filt, cache = filt_cache
+def _convolve(image, cache1, filt_cache):
+    filt, cache2 = filt_cache
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        return fftconvolve_cache(image, filt, 'valid', cache=cache)
+        return fftconvolve_cache(image, filt, 'valid', cache1=cache1, cache2=cache2)
 
 
 def _make_convs(image, filter_func=None, params=None):
     _setup(filter_func, params)
     image = np.asfarray(image)
-    return [_convolve(image, filt_cache) for filt_cache in zip(_filters, _caches)]
+    cur_cache = {}
+    return [_convolve(image, cache1=cur_cache, filt_cache=filt_cache)
+            for filt_cache in zip(_filters, _caches)]
 
 
 def make_features(image, filter_func=None, params=None):
