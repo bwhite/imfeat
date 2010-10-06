@@ -23,6 +23,7 @@ import unittest
 import numpy as np
 import Image
 import types
+import time
 
 import imfeat
 
@@ -31,6 +32,7 @@ class Test(unittest.TestCase):
     def test_0(self):
         # Find all features
         lena = Image.open('lena.jpg')
+        print('Image size [%s]' % str(lena.size))
         for feature_module in dir(imfeat):
             mod = getattr(imfeat, feature_module)
             if isinstance(mod, types.TypeType):
@@ -41,7 +43,9 @@ class Test(unittest.TestCase):
                 continue
             if 'make_features' in dir(mod):
                 print(feature_module)
+                st = time.time()
                 val = np.asfarray(imfeat.compute(mod, lena))
+                print('Time: %f' % (time.time() - st))
                 print(len(val))
                 try:
                     print(len(val[0]))

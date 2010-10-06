@@ -23,10 +23,11 @@ __license__ = 'GPL V3'
 import numpy as np
 import warnings
 import multiprocessing
-from scipy.signal import convolve2d, fftconvolve
+from scipy.signal import convolve2d, fftconvolve, ifft2, fft2, fftn, ifftn
 
 MODES = ['L']
 _filters = None
+_caches = None
 _filter_func = None
 _params = None
 _pool = None
@@ -59,6 +60,15 @@ def gabor_schmid(tau=2, sigma=1, radius=5):
     out /= np.std(out.ravel())
     return out
 
+def _ge_pow2(val):
+    """
+    Args:
+        val: Integer of interest
+
+    Returns:
+        The nearest power of 2 greater or equal to this
+    """
+    return 2 ** int(np.ceil(np.log2(val)))
 
 def _make_default():
     filter_func = gabor_schmid
@@ -69,7 +79,7 @@ def _make_default():
 
 
 def _setup(filter_func, params):
-    global _filters, _filter_func, _params, _pool
+    global _filters, _filter_func, _params, _pool, _caches
     #if _pool == None:
     #    _pool = multiprocessing.Pool()
     if _filters != None and filter_func == _filter_func and params == _params:
@@ -77,28 +87,81 @@ def _setup(filter_func, params):
     if filter_func == None and params == None:
         filter_func, params = _make_default()
     _filters = [filter_func(**param) for param in params]
+    _caches = [{} for x  in range(len(_filters))]
     _filter_func = filter_func
     _params = params
     for x in _filters[1:]:  # We assume all filters are the same shape
         assert(_filters[0].shape == x.shape)
 
 
-def _convolve(image_filt):
-    image, filt = image_filt
+def _centered(arr, newsize):
+    # Return the center newsize portion of the array.
+    newsize = np.asarray(newsize)
+    currsize = np.array(arr.shape)
+    startind = (currsize - newsize) / 2
+    endind = startind + newsize
+    myslice = [slice(startind[k], endind[k]) for k in range(len(endind))]
+    return arr[tuple(myslice)]
+
+def fftconvolve_cache(in1, in2, mode="full", cache=None):
+    """Convolve two N-dimensional arrays using FFT. See convolve.
+
+    Modified by Brandyn: Uses a cache for the second arg to prevent
+    recomputing fft.
+
+    """
+    s1 = np.array(in1.shape)
+    s2 = np.array(in2.shape)
+    complex_result = (np.issubdtype(in1.dtype, np.complex) or
+                      np.issubdtype(in2.dtype, np.complex))
+    size = s1+s2-1
+
+    # Always use 2**n-sized FFT
+    fsize = 2**np.ceil(np.log2(size))
+    fsize_k = tuple(fsize.tolist())
+    IN1 = fftn(in1,fsize)
+    # Brandyn: Start Mod
+    cache = {} if cache == None else cache
+    try:
+        IN1 *= cache[fsize_k]
+    except KeyError:
+        cache[fsize_k] = fftn(in2,fsize)
+        IN1 *= cache[fsize_k]
+    # Brandyn: End Mod
+    fslice = tuple([slice(0, int(sz)) for sz in size])
+    ret = ifftn(IN1)[fslice].copy()
+    del IN1
+    if not complex_result:
+        ret = ret.real
+    if mode == "full":
+        return ret
+    elif mode == "same":
+        if np.product(s1,axis=0) > np.product(s2,axis=0):
+            osize = s1
+        else:
+            osize = s2
+        return _centered(ret,osize)
+    elif mode == "valid":
+        return _centered(ret,abs(s2-s1)+1)
+
+
+def _convolve(image, filt_cache):
+    filt, cache = filt_cache
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        return fftconvolve(image, filt, 'valid')#
+        return fftconvolve_cache(image, filt, 'valid', cache=cache)
+
 
 def _make_convs(image, filter_func=None, params=None):
     _setup(filter_func, params)
     image = np.asfarray(image)
-    return map(_convolve, zip([image] * len(_filters), _filters))#_pool.
+    return [_convolve(image, filt_cache) for filt_cache in zip(_filters, _caches)]
 
 
 def make_features(image, filter_func=None, params=None):
     convs = _make_convs(image, filter_func, params)
     convs = [x.ravel() for x in convs]
-    return np.asfarray([x for x in zip(*convs)])
+    return np.array(convs).T
 
 
 def make_texton(image, dist, clusters, filter_func=None, params=None):
