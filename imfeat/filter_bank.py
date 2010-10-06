@@ -70,8 +70,8 @@ def _make_default():
 
 def _setup(filter_func, params):
     global _filters, _filter_func, _params, _pool
-    if _pool == None:
-        _pool = multiprocessing.Pool()
+    #if _pool == None:
+    #    _pool = multiprocessing.Pool()
     if _filters != None and filter_func == _filter_func and params == _params:
         return
     if filter_func == None and params == None:
@@ -92,7 +92,7 @@ def _convolve(image_filt):
 def _make_convs(image, filter_func=None, params=None):
     _setup(filter_func, params)
     image = np.asfarray(image)
-    return _pool.map(_convolve, zip([image] * len(_filters), _filters))
+    return map(_convolve, zip([image] * len(_filters), _filters))#_pool.
 
 
 def make_features(image, filter_func=None, params=None):
