@@ -122,10 +122,10 @@ def fftconvolve_cache(in1, in2, mode="full", cache1=None, cache2=None):
     cache1 = {} if cache1 == None else cache1
     cache2 = {} if cache2 == None else cache2
     try:
-        IN1 = cache1[fsize_k]
+        IN1 = cache1[fsize_k].copy()
     except KeyError:
         cache1[fsize_k] = fftn(in1,fsize)
-        IN1 = cache1[fsize_k]
+        IN1 = cache1[fsize_k].copy()
     try:
         IN1 *= cache2[fsize_k]
     except KeyError:
@@ -153,7 +153,8 @@ def _convolve(image, cache1, filt_cache):
     filt, cache2 = filt_cache
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        return fftconvolve_cache(image, filt, 'valid', cache1=cache1, cache2=cache2)
+        return fftconvolve_cache(image, filt, 'valid',
+                                 cache1=cache1, cache2=cache2)
 
 
 def _make_convs(image, filter_func=None, params=None):

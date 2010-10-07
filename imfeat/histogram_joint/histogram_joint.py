@@ -27,4 +27,4 @@ def _compute(num_pixels, num_bins, data):
     return bins / np.linalg.norm(bins, 1)
 
 def make_features(image):
-    return [np.array(_compute(image.size[0] * image.size[1], 16, image.tostring()), dtype=np.float64)]
+    return [np.asfarray(_compute(image.size[0] * image.size[1], 8, image.tostring()))]
