@@ -22,15 +22,13 @@ __license__ = 'GPL V3'
 
 import numpy as np
 import warnings
-import multiprocessing
-from scipy.signal import convolve2d, fftconvolve, ifft2, fft2, fftn, ifftn
+from scipy.signal import fftn, ifftn
 
 MODES = ['L']
 _filters = None
 _caches = None
 _filter_func = None
 _params = None
-_pool = None
 
 
 def gabor_schmid(tau=2, sigma=1, radius=5):
@@ -60,6 +58,7 @@ def gabor_schmid(tau=2, sigma=1, radius=5):
     out /= np.std(out.ravel())
     return out
 
+
 def _ge_pow2(val):
     """
     Args:
@@ -70,18 +69,17 @@ def _ge_pow2(val):
     """
     return 2 ** int(np.ceil(np.log2(val)))
 
+
 def _make_default():
     filter_func = gabor_schmid
     params = ({'tau': t, 'sigma': s, 'radius': 20}
-              for t in range(1, 8)
-              for s in range(5, 10))
+              for t in range(1, 8, 2)
+              for s in range(5, 10, 2))
     return filter_func, params
 
 
 def _setup(filter_func, params):
-    global _filters, _filter_func, _params, _pool, _caches
-    #if _pool == None:
-    #    _pool = multiprocessing.Pool()
+    global _filters, _filter_func, _params, _caches
     if _filters != None and filter_func == _filter_func and params == _params:
         return
     if filter_func == None and params == None:
@@ -102,6 +100,7 @@ def _centered(arr, newsize):
     endind = startind + newsize
     myslice = [slice(startind[k], endind[k]) for k in range(len(endind))]
     return arr[tuple(myslice)]
+
 
 def fftconvolve_cache(in1, in2, mode="full", cache1=None, cache2=None):
     """Convolve two N-dimensional arrays using FFT. See convolve.
@@ -124,12 +123,12 @@ def fftconvolve_cache(in1, in2, mode="full", cache1=None, cache2=None):
     try:
         IN1 = cache1[fsize_k].copy()
     except KeyError:
-        cache1[fsize_k] = fftn(in1,fsize)
+        cache1[fsize_k] = fftn(in1, fsize)
         IN1 = cache1[fsize_k].copy()
     try:
         IN1 *= cache2[fsize_k]
     except KeyError:
-        cache2[fsize_k] = fftn(in2,fsize)
+        cache2[fsize_k] = fftn(in2, fsize)
         IN1 *= cache2[fsize_k]
     # Brandyn: End Mod
     fslice = tuple([slice(0, int(sz)) for sz in size])
@@ -140,13 +139,13 @@ def fftconvolve_cache(in1, in2, mode="full", cache1=None, cache2=None):
     if mode == "full":
         return ret
     elif mode == "same":
-        if np.product(s1,axis=0) > np.product(s2,axis=0):
+        if np.product(s1, axis=0) > np.product(s2, axis=0):
             osize = s1
         else:
             osize = s2
-        return _centered(ret,osize)
+        return _centered(ret, osize)
     elif mode == "valid":
-        return _centered(ret,abs(s2-s1)+1)
+        return _centered(ret, abs(s2 - s1) + 1)
 
 
 def _convolve(image, cache1, filt_cache):
@@ -191,18 +190,20 @@ def make_texton(image, dist, clusters, filter_func=None, params=None):
     for i in range(shape[0]):
         for j in range(shape[1]):
             texton[i, j] = dist.nn(clusters, convs[:, i, j])[1]
-    return texton 
+    return texton
+
 
 def _demo():
     import distpy
     import pickle
     import Image
     import glob
-    import random
     import os
     import matplotlib.pyplot as mp
-    clust_fn = '/home/brandyn/projects/constrained_visual_analysis/box_seg_classifier/cluster/vocab_filter.pkl99'
-    image_fns = glob.glob('/home/brandyn/data/msrc/working/MSRC_ObjCategImageDatabase_v2/Images/*.bmp')
+    clust_fn = ('/home/brandyn/projects/constrained_visual_analysis/'
+                'box_seg_classifier/cluster/vocab_filter.pkl99')
+    image_fns = glob.glob(('/home/brandyn/data/msrc/working/'
+                           'MSRC_ObjCategImageDatabase_v2/Images/*.bmp'))
     out_dir = '/home/brandyn/playground/texton/'
     try:
         os.makedirs(out_dir)
@@ -214,7 +215,6 @@ def _demo():
         mp.clf()
         mp.imshow(make_texton(image, distpy.L2Sqr(), clust))
         mp.savefig(out_dir + os.path.basename(image_fn) + '.png')
-        
-#if __name__ == '__main__':
-#    _demo()
-    
+
+if __name__ == '__main__':
+    _demo()
