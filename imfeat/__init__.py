@@ -9,4 +9,5 @@ from surf import surf_feature as surf
 from surf import surf_random
 from bovw import BoVW
 import filter_bank
+from _faces import faces
 from main import compute, compute_points
