@@ -14,6 +14,6 @@ env.Append(SWIGFLAGS = '-shadow')
 
 
 env.SharedLibrary('_Autocorrelogram',['Autocorrelogram.cpp', 'Autocorrelogram.i'])
-#env.Program('test',['test.cpp', 'Autocorrelogram.cpp'],LIBS=['cxcore', 'cv', 'highgui', 'cvaux'])
+#env.Program('test',['test.cpp', 'Autocorrelogram.cpp'],LIBS=['opencv_core', 'opencv_imgproc, 'opencv_highgui'])
 
 Default('.')
