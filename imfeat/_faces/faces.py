@@ -9,10 +9,10 @@ _cascade = None
 def _setup():
     global _cascade
     try:
-        cascade_path = (__path__[0] + '/data/haarcascade_frontalface_default.xml')
+        cascade_path = ('haarcascade_frontalface_default.xml')
         _cascade = cv.Load(cascade_path)
     except:
-        cascade_path = ('haarcascade_frontalface_default.xml')
+        cascade_path = (__path__[0] + '/data/haarcascade_frontalface_default.xml')
         _cascade = cv.Load(cascade_path)
 
 
