@@ -4,8 +4,8 @@ env.Replace(CXX = 'g++')
 env.Append(CCFLAGS =  '-O3 -Wall -fPIC')
 
 exp = ['env']
-SConscript('imfeat/moments/SConstruct', exp)
-SConscript('imfeat/rhog/SConstruct', exp)
-SConscript('imfeat/histogram_joint/SConstruct', exp)
-SConscript('imfeat/histogram/SConstruct', exp)
-SConscript('imfeat/surf/SConstruct', exp)
+SConscript('imfeat/_moments/SConstruct', exp)
+SConscript('imfeat/_rhog/SConstruct', exp)
+SConscript('imfeat/_histogram_joint/SConstruct', exp)
+SConscript('imfeat/_histogram/SConstruct', exp)
+SConscript('imfeat/_surf/SConstruct', exp)
