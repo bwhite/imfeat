@@ -31,7 +31,7 @@ import imfeat
 class Test(unittest.TestCase):
     def test_0(self):
         # Find all features
-        lena = Image.open('lena.jpg')
+        lena = Image.open('test_images/lena.jpg')
         print('Image size [%s]' % str(lena.size))
         for feature_module in dir(imfeat):
             mod = getattr(imfeat, feature_module)
