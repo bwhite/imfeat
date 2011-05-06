@@ -109,7 +109,7 @@ def _convert_pil(image, mode):
                 return cv_im
         raise ValueError('Image must not be gray')
     if isinstance(mode, str):  # TO PIL
-        return image.convert(feature_module.MODES[0])
+        return image.convert(mode)
     elif mode[0] == 'opencv':
         cv_im = cv.CreateImageHeader(image.size, cv.IPL_DEPTH_8U, 3)
         cv.SetData(cv_im, image.tostring())
@@ -174,7 +174,12 @@ def compute(feature_module, image, *args, **kw):
     Raises:
         ValueError: There was a problem converting the color.
     """
-    image = _convert_image(image, feature_module.MODES)
+    try:
+        modes = feature_module.MODES
+    except AttributeError:
+        pass
+    else:
+        image = _convert_image(image, modes)
     return feature_module.make_features(image, *args, **kw)
 
 

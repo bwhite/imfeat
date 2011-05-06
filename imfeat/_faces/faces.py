@@ -1,5 +1,6 @@
 import cv
 import numpy as np
+import os
 from . import __path__
 
 MODES = ['L', 'RGB']
@@ -8,12 +9,15 @@ _cascade = None
 
 def _setup():
     global _cascade
-    try:
-        cascade_path = ('haarcascade_frontalface_default.xml')
-        _cascade = cv.Load(cascade_path)
-    except:
-        cascade_path = (__path__[0] + '/data/haarcascade_frontalface_default.xml')
-        _cascade = cv.Load(cascade_path)
+    path = 'haarcascade_frontalface_default.xml'
+    if os.path.exists(path):
+        _cascade = cv.Load(path)
+    else:
+        path = (__path__[0] + '/data/haarcascade_frontalface_default.xml')
+        if os.path.exists(path):
+            _cascade = cv.Load(path)
+        else:
+            raise ValueError("Can't find .xml file!")
 
 
 def _detect_faces(img, cascade):
