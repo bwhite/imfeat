@@ -27,4 +27,5 @@ def _compute(num_pixels, num_bins, data):
     return bins / np.linalg.norm(bins, 1)
 
 def make_features(image):
+    assert image.mode in MODES
     return [np.asfarray(_compute(image.size[0] * image.size[1], 8, image.tostring()))]
