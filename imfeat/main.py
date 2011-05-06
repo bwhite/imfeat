@@ -20,25 +20,163 @@
 __author__ = 'Brandyn A. White <bwhite@cs.umd.edu>'
 __license__ = 'GPL V3'
 
+import Image
+import cv
+
+
+def _convert_color(image, code, depth):
+    """Convert an OpenCV image's color
+
+    Args:
+        image: OpenCV IPLImage or CvMat
+        code: OpenCV color code (e.g., cv.CV_BGR2LAB)
+        depth: OpenCV depth (e.g., cv.IPL_DEPTH_32F or cv.IPL_DEPTH_8U)
+
+    Returns:
+        IPLImage of 'depth' with 3 channels in the color space specified by 'code'
+    """
+    if image.channels != 3:
+        raise ValueError('Image must not be gray')
+    if image.depth != cv.IPL_DEPTH_32F or image.depth != cv.IPL_DEPTH_8U:
+        raise ValueError('Image must be either 32F or 8U!')
+    if depth == cv.IPL_DEPTH_32F:
+        if image.depth == cv.IPL_DEPTH_8U:
+            image_f = cv.CreateImage(image.size, depth, 3)
+            cv.CvtScale(image, image_f, 1 / 255.)
+            image = image_f
+    elif depth == cv.IPL_DEPTH_8U:
+        if image.depth == cv.IPL_DEPTH_32F:
+            image_f = cv.CreateImage(image.size, depth, 3)
+            cv.CvtScale(image, image_f, 255.)
+            image = image_f
+    image_convert = cv.CreateImage(image.size, depth, 3)
+    cv.CvtColor(image_f, image_convert, code)
+    return image_convert
+
+
+def _convert_cv_bgr(image, mode, depth):
+    """Convert an OpenCV image's color
+
+    Args:
+        image: OpenCV IPLImage or CvMat
+        code: OpenCV color code (e.g., cv.CV_BGR2LAB)
+        depth: OpenCV depth (e.g., cv.IPL_DEPTH_32F or cv.IPL_DEPTH_8U)
+
+    Returns:
+        IPLImage of 'depth' with 3 channels in the color space specified by 'code'
+    """
+    mode = mode.lower()
+    code = {'rgb': cv.CV_BGR2RGB,
+            'gray': cv.CV_BGR2GRAY,
+            'hls': cv.CV_BGR2HLS,
+            'hsv': cv.CV_BGR2HSV,
+            'lab': cv.CV_BGR2LAB,
+            'luv': cv.CV_BGR2LUV,
+            'xyz': cv.CV_BGR2XYZ,
+            'ycrcb': cv.CV_BGR2YCRCB}[mode]
+    return _convert_color(image, code, depth)
+
+
+def _convert_cv_rgb(image, mode):
+    """Convert an OpenCV image's color
+
+    Args:
+        image: OpenCV IPLImage or CvMat
+        code: OpenCV color code (e.g., cv.CV_RGB2LAB)
+        depth: OpenCV depth (e.g., cv.IPL_DEPTH_32F or cv.IPL_DEPTH_8U)
+
+    Returns:
+        IPLImage of 'depth' with 3 channels in the color space specified by 'code'
+    """
+    mode = mode.lower()
+    code = {'bgr': cv.CV_RGB2BGR,
+            'gray': cv.CV_RGB2GRAY,
+            'hls': cv.CV_RGB2HLS,
+            'hsv': cv.CV_RGB2HSV,
+            'lab': cv.CV_RGB2LAB,
+            'luv': cv.CV_RGB2LUV,
+            'xyz': cv.CV_RGB2XYZ,
+            'ycrcb': cv.CV_RGB2YCRCB}[mode]
+    return _convert_color(image, code)
+
+
+def _convert_pil(image, mode):
+    if image.mode == 'L':
+        if not isinstance(mode, str):
+            if mode == ('opencv', 'gray', cv.IPL_DEPTH_8U):
+                cv_im = cv.CreateImageHeader(image.size, cv.IPL_DEPTH_8U, 1)
+                cv.SetData(cv_im, image.tostring())
+                return cv_im
+        raise ValueError('Image must not be gray')
+    if isinstance(mode, str):  # TO PIL
+        return image.convert(feature_module.MODES[0])
+    elif mode[0] == 'opencv':
+        cv_im = cv.CreateImageHeader(image.size, cv.IPL_DEPTH_8U, 3)
+        cv.SetData(cv_im, image.tostring())
+        return _convert_cv_rgb(cv_im, mode[1], mode[2])
+    else:
+        raise ValueError('Mode is not valid! [%s]' % str(mode))
+
+
+def _convert_cv(image, mode):
+    if image.channels != 3:
+        if isinstance(mode, str) and mode == 'L':  # TO PIL
+            return Image.fromstring("L", cv.GetSize(image),
+                                    image.tostring())
+        raise ValueError('Image must not be gray')
+    if isinstance(mode, str):  # TO PIL
+        image = Image.fromstring("RGB", cv.GetSize(image),
+                                _convert_cv_bgr(image, 'rgb',
+                                                cv.IPL_DEPTH_8U).tostring())
+        return image.convert(mode)
+    elif mode[0] == 'opencv':
+        return _convert_cv_bgr(image, mode[1], mode[2])
+    else:
+        raise ValueError('Mode is not valid! [%s]' % str(mode))
+
+
+def _convert_image(image, modes):
+    """
+    Args:
+        image: A PIL image or an OpenCV BGR/Gray image (8 bits per channel)
+        modes: List of valid image types
+
+    Returns:
+        Valid image
+
+    Raises:
+        ValueError: There was a problem converting the color.
+    """
+    if Image.isImageType(image) and (image.mode == 'L' or image.mode == 'RGB'):
+        if image.mode not in modes:
+            image = _convert_pil(image, modes[0])
+    elif isinstance(image, cv.iplimage) and (image.channels == 1 or image.channels == 3) and image.depth == cv.IPL_DEPTH_8U:
+        mode = 'rgb' if image.channels == 3 else 'gray'
+        if ('opencv', cv.IPL_DEPTH_8U, mode) not in modes:
+            image = _convert_cv(image, modes[0])
+    else:
+        raise ValueError('Unknown image type')
+    return image
+
+
 def compute(feature_module, image, *args, **kw):
     """Compute features while performing conversions and checks.
 
     Args:
         feature_module: A module that has a make_features function.
-        image: A PIL image.
+        image: A PIL image or an OpenCV BGR/Gray image (8 bits per channel)
         args: Optional positional arguments to be passed on.
         kw: Optional keyword arguments to be passed on.
 
     Returns:
         Feature computation output.
-    """
 
-    try:
-        if image.mode not in feature_module.MODES:
-            image = image.convert(feature_module.MODES[0])
-    except AttributeError:
-        pass
+    Raises:
+        ValueError: There was a problem converting the color.
+    """
+    image = _convert_image(image, feature_module.MODES)
     return feature_module.make_features(image, *args, **kw)
+
 
 def compute_points(feature_module, image, *args, **kw):
     """Compute feature points while performing conversions and checks.
