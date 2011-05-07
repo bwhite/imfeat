@@ -37,21 +37,46 @@ def _convert_color(image, code, depth):
     """
     if image.channels != 3:
         raise ValueError('Image must not be gray')
-    if image.depth != cv.IPL_DEPTH_32F or image.depth != cv.IPL_DEPTH_8U:
-        raise ValueError('Image must be either 32F or 8U!')
+    if image.depth != cv.IPL_DEPTH_32F and image.depth != cv.IPL_DEPTH_8U:
+        raise ValueError('Image must be either 32F or 8U! It is [%s]' % image.depth)
+    image_f = image
     if depth == cv.IPL_DEPTH_32F:
         if image.depth == cv.IPL_DEPTH_8U:
-            image_f = cv.CreateImage(image.size, depth, 3)
+            image_f = cv.CreateImage(cv.GetSize(image), depth, 3)
             cv.CvtScale(image, image_f, 1 / 255.)
             image = image_f
     elif depth == cv.IPL_DEPTH_8U:
         if image.depth == cv.IPL_DEPTH_32F:
-            image_f = cv.CreateImage(image.size, depth, 3)
+            image_f = cv.CreateImage(cv.GetSize(image), depth, 3)
             cv.CvtScale(image, image_f, 255.)
             image = image_f
-    image_convert = cv.CreateImage(image.size, depth, 3)
+    image_convert = cv.CreateImage(cv.GetSize(image), depth, 3)
     cv.CvtColor(image_f, image_convert, code)
     return image_convert
+
+
+def _convert_scale(image, depth):
+    """Convert an OpenCV image's color
+
+    Args:
+        image: OpenCV IPLImage or CvMat
+        depth: OpenCV depth (e.g., cv.IPL_DEPTH_32F or cv.IPL_DEPTH_8U)
+
+    Returns:
+        IPLImage of 'depth' with 3 channels in the color space specified by 'code'
+    """
+    image_f = image
+    if depth == cv.IPL_DEPTH_32F:
+        if image.depth == cv.IPL_DEPTH_8U:
+            image_f = cv.CreateImage(cv.GetSize(image), depth, image.channels)
+            cv.CvtScale(image, image_f, 1 / 255.)
+            image = image_f
+    elif depth == cv.IPL_DEPTH_8U:
+        if image.depth == cv.IPL_DEPTH_32F:
+            image_f = cv.CreateImage(cv.GetSize(image), depth, image.channels)
+            cv.CvtScale(image, image_f, 255.)
+            image = image_f
+    return image_f
 
 
 def _convert_cv_bgr(image, mode, depth):
@@ -66,18 +91,20 @@ def _convert_cv_bgr(image, mode, depth):
         IPLImage of 'depth' with 3 channels in the color space specified by 'code'
     """
     mode = mode.lower()
+    if mode == 'bgr':
+        return _convert_scale(image, depth)
     code = {'rgb': cv.CV_BGR2RGB,
             'gray': cv.CV_BGR2GRAY,
             'hls': cv.CV_BGR2HLS,
             'hsv': cv.CV_BGR2HSV,
-            'lab': cv.CV_BGR2LAB,
-            'luv': cv.CV_BGR2LUV,
+            'lab': cv.CV_BGR2Lab,
+            'luv': cv.CV_BGR2Luv,
             'xyz': cv.CV_BGR2XYZ,
-            'ycrcb': cv.CV_BGR2YCRCB}[mode]
+            'ycrcb': cv.CV_BGR2YCrCb}[mode]
     return _convert_color(image, code, depth)
 
 
-def _convert_cv_rgb(image, mode):
+def _convert_cv_rgb(image, mode, depth):
     """Convert an OpenCV image's color
 
     Args:
@@ -89,15 +116,17 @@ def _convert_cv_rgb(image, mode):
         IPLImage of 'depth' with 3 channels in the color space specified by 'code'
     """
     mode = mode.lower()
+    if mode == 'rgb':
+        return _convert_scale(image, depth)
     code = {'bgr': cv.CV_RGB2BGR,
             'gray': cv.CV_RGB2GRAY,
             'hls': cv.CV_RGB2HLS,
             'hsv': cv.CV_RGB2HSV,
-            'lab': cv.CV_RGB2LAB,
-            'luv': cv.CV_RGB2LUV,
+            'lab': cv.CV_RGB2Lab,
+            'luv': cv.CV_RGB2Luv,
             'xyz': cv.CV_RGB2XYZ,
-            'ycrcb': cv.CV_RGB2YCRCB}[mode]
-    return _convert_color(image, code)
+            'ycrcb': cv.CV_RGB2YCrCb}[mode]
+    return _convert_color(image, code, depth)
 
 
 def _convert_pil(image, mode):
