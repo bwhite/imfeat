@@ -36,6 +36,10 @@ except ImportError:
 ext_modules = [Extension("_imfeat_histogram",
                          ["imfeat/new_histogram/histogram" + source_ext,
                           'imfeat/new_histogram/histogram_aux.c'],
+                         extra_compile_args=['-I', np.get_include()]),
+               Extension("_imfeat_autocorrelogram",
+                         ["imfeat/_autocorrelogram/autocorrelogram" + source_ext,
+                          'imfeat/_autocorrelogram/Autocorrelogram.cpp'],
                          extra_compile_args=['-I', np.get_include()])]
 
 setup(name='imfeat',

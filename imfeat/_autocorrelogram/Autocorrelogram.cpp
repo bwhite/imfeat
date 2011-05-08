@@ -1,9 +1,11 @@
+/* From the paper "Image Indexing Using Color Correlograms"
+ */
+
 #include <cstring>
+#include <cassert>
 #include "Autocorrelogram.hpp"
 
-std::vector<int> convert_colors_rg16(char *data_signed, int size) {
-  unsigned char *data = (unsigned char*)data_signed;
-  std::vector<int> out(size);
+void convert_colors_rg16(unsigned char *data, int size, unsigned char *out) {
   unsigned char r, g;
   int val;
   for (int i = 0; i < size; i++) {
@@ -30,13 +32,9 @@ std::vector<int> convert_colors_rg16(char *data_signed, int size) {
 	val += 1;
     out[i] = val;
   }
-
-  return out;
 }
 
-std::vector<int> convert_colors_rg64(char *data_signed, int size) {
-  unsigned char *data = (unsigned char*)data_signed;
-  std::vector<int> out(size);
+void convert_colors_rg64(unsigned char *data, int size, unsigned char *out) {
   unsigned char r, g, b;
   for (int i = 0; i < size; i++) {
     r = data[i*3] & 0xC0;
@@ -45,8 +43,6 @@ std::vector<int> convert_colors_rg64(char *data_signed, int size) {
     
     out[i] = (r >> 2) + (g >> 4) + (b >> 6);
   }
-
-  return out;
 }
 
 Autocorrelogram::Autocorrelogram(int height, int width, int unique_colors, std::vector<int> distance_set): height(height), width(width), unique_colors(unique_colors), distance_set(distance_set), max_dist(distance_set.back()), max_height(height - distance_set.back()), max_width(width - distance_set.back()) {
@@ -115,10 +111,6 @@ double Autocorrelogram::make_correlogram_scalar(const unsigned char *data, int k
   return scalar / (hist[color] * 8 * k);
 }
 
-std::vector<double> Autocorrelogram::compute(const char *data) {
-  return compute((const unsigned char *)data);
-}
-
 std::vector<double> Autocorrelogram::compute(const unsigned char *data) {
   std::vector<double> ac(unique_colors * distance_set.size(), 0.0);
   int ac_ind = 0;
@@ -139,4 +131,16 @@ std::vector<double> Autocorrelogram::compute(const unsigned char *data) {
     }
   }
   return ac;
+}
+
+void autocorrelogram(unsigned char *data, int height, int width, int unique_colors,
+                     int *distance_set, int distance_set_size, double *ac_out, int ac_out_size) {
+    std::vector<int> distance_set_vec(distance_set_size);
+    for (int i = 0; i < distance_set_size; ++i)
+        distance_set_vec[i] = distance_set[i];
+    Autocorrelogram ac(height, width, unique_colors, distance_set_vec);
+    std::vector<double> ac_vec = ac.compute(data);
+    assert((unsigned int)ac_out_size == ac_vec.size());
+    for (int i = 0; i < ac_out_size; ++i)
+        ac_out[i] = ac_vec[i];
 }
