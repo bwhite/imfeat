@@ -35,7 +35,7 @@ cdef class Histogram(object):
     cpdef make_features(self, image_cv):
         cdef np.ndarray image = np.ascontiguousarray(cv.GetMat(image_cv), dtype=np.float32)
         cdef np.ndarray out 
-        print('Min[%s] Max[%s]' % (np.min(np.min(image, 0), 0), np.max(np.max(image, 0), 0)))
+        #print('Min[%s] Max[%s]' % (np.min(np.min(image, 0), 0), np.max(np.max(image, 0), 0)))
         if self.style == 'joint':
             out = np.zeros(self.num_hist_bins, dtype=np.int32)
             histogram_joint_fast(<float *>image.data, image_cv.height, image_cv.width, <np.float32_t *>self.min_vals.data,
