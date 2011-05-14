@@ -46,7 +46,7 @@ class Test(unittest.TestCase):
         imfeat.filter_bank.make_features = mk(imfeat.filter_bank.make_features)
         bovw = imfeat.BoVW(imfeat.filter_bank, distpy.L2Sqr(), normalize,
                            clusters)
-        lena = Image.open('lena.jpg').convert('L')
+        lena = Image.open('test_images/lena.jpg').convert('L')
         print(bovw.make_features(lena))
 
 if __name__ == '__main__':
