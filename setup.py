@@ -40,6 +40,9 @@ ext_modules = [Extension("_imfeat_histogram",
                Extension("_imfeat_autocorrelogram",
                          ["imfeat/_autocorrelogram/autocorrelogram" + source_ext,
                           'imfeat/_autocorrelogram/Autocorrelogram.cpp'],
+                         extra_compile_args=['-I', np.get_include()]),
+               Extension("_imfeat_moments",
+                         ["imfeat/moments" + source_ext],
                          extra_compile_args=['-I', np.get_include()])]
 
 setup(name='imfeat',

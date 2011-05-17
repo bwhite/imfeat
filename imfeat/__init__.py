@@ -2,6 +2,7 @@ import dummy
 import rand
 from _imfeat_autocorrelogram import Autocorrelogram
 from _imfeat_histogram import Histogram
+from _imfeat_moments import Moments
 #from _moments import moments
 #from _histogram_joint import histogram_joint
 #from _rhog import rhog, rhog_rgb
