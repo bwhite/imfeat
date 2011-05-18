@@ -24,16 +24,17 @@ import Image
 import cv
 
 
-def _convert_color(image, code, depth):
+def _convert_color(image, code, depth, channels):
     """Convert an OpenCV image's color
 
     Args:
-        image: OpenCV IPLImage or CvMat
+        image: OpenCV IPLImage or CvMat in RGB or BGR mode
         code: OpenCV color code (e.g., cv.CV_BGR2LAB)
         depth: OpenCV depth (e.g., cv.IPL_DEPTH_32F or cv.IPL_DEPTH_8U)
+        channels: Number of channels in the output image
 
     Returns:
-        IPLImage of 'depth' with 3 channels in the color space specified by 'code'
+        IPLImage of 'depth' with 'channels' in the color space specified by 'code'
     """
     if image.channels != 3:
         raise ValueError('Image must not be gray')
@@ -50,7 +51,7 @@ def _convert_color(image, code, depth):
             image_f = cv.CreateImage(cv.GetSize(image), depth, 3)
             cv.CvtScale(image, image_f, 255.)
             image = image_f
-    image_convert = cv.CreateImage(cv.GetSize(image), depth, 3)
+    image_convert = cv.CreateImage(cv.GetSize(image_f), depth, channels)
     cv.CvtColor(image_f, image_convert, code)
     return image_convert
 
@@ -101,7 +102,8 @@ def _convert_cv_bgr(image, mode, depth):
             'luv': cv.CV_BGR2Luv,
             'xyz': cv.CV_BGR2XYZ,
             'ycrcb': cv.CV_BGR2YCrCb}[mode]
-    return _convert_color(image, code, depth)
+    channels = 3 if mode != 'gray' else 1
+    return _convert_color(image, code, depth, channels)
 
 
 def _convert_cv_rgb(image, mode, depth):
@@ -126,7 +128,8 @@ def _convert_cv_rgb(image, mode, depth):
             'luv': cv.CV_RGB2Luv,
             'xyz': cv.CV_RGB2XYZ,
             'ycrcb': cv.CV_RGB2YCrCb}[mode]
-    return _convert_color(image, code, depth)
+    channels = 3 if mode != 'gray' else 1
+    return _convert_color(image, code, depth, channels)
 
 
 def _convert_pil(image, mode):

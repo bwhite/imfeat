@@ -41,7 +41,18 @@ class TestFeatures(unittest.TestCase):
             np.testing.assert_almost_equal(np.mean(image, 0), feat_out[0][:3])
             print(np.var(image, 0), feat_out[0][3:6])
             np.testing.assert_almost_equal(np.var(image, 0), feat_out[0][3:6])
-            
+
+    def test_rhog_gray(self):
+        feature = imfeat.RHOG()
+        for feat_out, image in self._run_all_images(feature):
+            print(feat_out)
+            print(len(feat_out[0]))
+
+    def test_rhog_rgb(self):
+        feature = imfeat.RHOG(gray=False)
+        for feat_out, image in self._run_all_images(feature):
+            print(feat_out)
+            print(len(feat_out[0]))
             
 if __name__ == '__main__':
     unittest.main()
