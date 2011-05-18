@@ -1,2 +1,0 @@
-Import('env')
-env.SharedLibrary('lib/moments',['Moments.cpp'])

@@ -33,7 +33,7 @@ int compute_surf_descriptors(char *data, int height, int width, int max_points, 
   return total_points;
 }
 
-int compute_surf_points(char *data, int height, int width, int max_points, float *points, int *x, int *y, int *scale, float *orientation, bool *sign, float *cornerness) {
+int compute_surf_points(char *data, int height, int width, int max_points, float *points, int *x, int *y, int *scale, float *orientation, char *sign, float *cornerness) {
   int total_points = 0;
   IntegralImage intim(data, height, width);
   std::list<SurfPoint*> *sp = SurfDetect::allocPoints();

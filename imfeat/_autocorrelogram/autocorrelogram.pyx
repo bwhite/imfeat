@@ -13,7 +13,7 @@ cdef class Autocorrelogram(object):
     cdef np.ndarray distance_set
     cdef int unique_colors
 
-    def __init__(self, distance_set, unique_colors=64):
+    def __init__(self, distance_set=(1,3,5,7), unique_colors=64):
         assert unique_colors == 16 or unique_colors == 64
         self.MODES = [('opencv', 'rgb', 8)]
         self.distance_set = np.ascontiguousarray(distance_set, dtype=np.int32)
