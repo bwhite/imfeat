@@ -56,7 +56,7 @@ def _convert_color(image, code, depth, channels):
     return image_convert
 
 
-def _convert_scale(image, depth):
+def _convert_depth(image, depth):
     """Convert an OpenCV image's color
 
     Args:
@@ -93,7 +93,7 @@ def _convert_cv_bgr(image, mode, depth):
     """
     mode = mode.lower()
     if mode == 'bgr':
-        return _convert_scale(image, depth)
+        return _convert_depth(image, depth)
     code = {'rgb': cv.CV_BGR2RGB,
             'gray': cv.CV_BGR2GRAY,
             'hls': cv.CV_BGR2HLS,
@@ -119,7 +119,7 @@ def _convert_cv_rgb(image, mode, depth):
     """
     mode = mode.lower()
     if mode == 'rgb':
-        return _convert_scale(image, depth)
+        return _convert_depth(image, depth)
     code = {'bgr': cv.CV_RGB2BGR,
             'gray': cv.CV_RGB2GRAY,
             'hls': cv.CV_RGB2HLS,
@@ -167,7 +167,7 @@ def _convert_cv(image, mode):
         raise ValueError('Mode is not valid! [%s]' % str(mode))
 
 
-def _convert_image(image, modes):
+def convert_image(image, modes):
     """
     Args:
         image: A PIL image or an OpenCV BGR/Gray image (8 bits per channel)
@@ -211,7 +211,7 @@ def compute(feature_module, image, *args, **kw):
     except AttributeError:
         pass
     else:
-        image = _convert_image(image, modes)
+        image = convert_image(image, modes)
     return feature_module.make_features(image, *args, **kw)
 
 
