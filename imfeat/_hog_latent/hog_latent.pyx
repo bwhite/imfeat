@@ -18,6 +18,7 @@ cdef class HOGLatent(object):
         cdef np.ndarray image = np.ascontiguousarray(cv.GetMat(image_cv), dtype=np.float64)
         cdef np.ndarray feat_shape = np.zeros(3, dtype=np.int32)
         process_feat_size(image_cv.height, image_cv.width, self._sbin, <np.int32_t *>feat_shape.data)
+        print(feat_shape)
         cdef np.ndarray out = np.zeros(feat_shape[::-1], dtype=np.float64)
         process(<np.float64_t *>image.data, image_cv.height, image_cv.width, self._sbin, <np.float64_t *>out.data, np.prod(feat_shape))
-        return [out.ravel()]
+        return [np.ascontiguousarray(out.T.ravel())]

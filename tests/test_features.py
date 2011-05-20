@@ -1,7 +1,10 @@
 import unittest
 import Image
 import imfeat
+import hashlib
 import numpy as np
+import scipy as sp
+import scipy.io
 
 
 class TestFeatures(unittest.TestCase):
@@ -73,7 +76,10 @@ class TestFeatures(unittest.TestCase):
             print(feat_out)
             print(len(feat_out[0]))
         print('Hog Latent')
-
+        image = Image.open('test_images/lena.ppm')
+        out = imfeat.compute(feature, image)[0]
+        self.assertEqual(len(out), 254 * 254 * 32)
+        np.testing.assert_equal(hashlib.md5(out).hexdigest(), '18231ad8c359860ee09e8f0fa8b316a1')
 
     def test_gist(self):
         feature = imfeat.GIST()
