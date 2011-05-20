@@ -5,6 +5,8 @@ cimport numpy as np
 cdef extern from "features.hpp":
     void process_feat_size(int height, int width, int sbin, np.int32_t *out)
     void process(np.float64_t *im_rowmajor, int height, int width, int sbin, np.float64_t *feat, int feat_size)
+    void resize_size(int height, int width, int scale, np.int32_t *ddims)
+    void resize(np.float64_t *im_rowmajor, int height, int width, double scale, np.float64_t *dst_rowmajor, int dst_rowmajor_size)
 
 cdef class HOGLatent(object):
     cdef public object MODES
@@ -13,6 +15,12 @@ cdef class HOGLatent(object):
     def __init__(self, sbin=2):
         self.MODES = [('opencv', 'rgb', 8)]
         self._sbin = sbin
+
+    cdef _make_pyramid(self, image_cv):
+        pass
+
+    cdef _make_feature(self, image):
+        pass
 
     cpdef make_features(self, image_cv):
         cdef np.ndarray image = np.ascontiguousarray(cv.GetMat(image_cv), dtype=np.float64)

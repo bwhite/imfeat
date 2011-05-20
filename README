@@ -3,6 +3,10 @@ License: GPLv3
 
 Goal: Standardize image feature descriptors to facilitate reuse
 
+Requirements:
+fftw3
+cython
+
 Definition of an Image Feature
 - A python module that has a "make_features" function
 - Takes a PIL image as it's argument

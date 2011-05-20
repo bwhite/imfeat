@@ -41,6 +41,15 @@ void convert_rm_to_cm(double *rm, double *cm, const int height, const int width)
                 cm[wh * k + j * height + i] = rm[i *  (width * 3) + j * 3 + k];
 }
 
+void convert_cm_to_rm(double *cm, double *rm, const int height, const int width) {
+    int i, j, k;
+    int wh = width * height;
+    for (i = 0; i < height; ++i)
+        for (j = 0; j < width; ++j)
+            for (k = 0; k < 3; ++k)
+                rm[i *  (width * 3) + j * 3 + k] = cm[wh * k + j * height + i];
+}
+
 void process_feat_size(int height, int width, int sbin, int *out) {
   /*
    Args:

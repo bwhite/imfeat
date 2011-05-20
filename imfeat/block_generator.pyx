@@ -94,7 +94,7 @@ cdef class CoordGeneratorRect(CoordGeneratorBase):
         if self._next_pos[1] + self._output_size_half[1] <= self._image_size[1]:
             self._output[:2] = self._next_pos
             self._next_pos[1] += self._step_delta[1]
-            return self.format_output(self._output)
+            return self.format_output(self._output.copy())
         self._next_pos[0] += self._step_delta[0]
         if self._next_pos[0] + self._output_size_half[0] <= self._image_size[0]:
             self._next_pos[1] = self._initial_pos[1]
