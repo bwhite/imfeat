@@ -66,6 +66,15 @@ class TestFeatures(unittest.TestCase):
             print(feat_out)
             print(len(feat_out[0]))
 
+    def test_hog_latent(self):
+        print('Hog Latent')
+        feature = imfeat.HOGLatent(2)
+        for feat_out, image in self._run_all_images(feature):
+            print(feat_out)
+            print(len(feat_out[0]))
+        print('Hog Latent')
+
+
     def test_gist(self):
         feature = imfeat.GIST()
         for feat_out, image in self._run_all_images(feature):
