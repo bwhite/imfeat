@@ -5,6 +5,7 @@ from _imfeat_histogram import Histogram
 from _imfeat_moments import Moments
 from _imfeat_rhog import RHOG
 from _imfeat_surf import SURF
+from _imfeat_gist import GIST
 from _imfeat_block_generator import CoordGeneratorBase, CoordGeneratorRect, BlockGenerator
 #from _rhog_dalal import rhog as rhog_dalal
 from _bovw import BoVW

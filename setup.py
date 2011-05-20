@@ -56,7 +56,15 @@ ext_modules = [Extension("_imfeat_histogram",
                          'imfeat/_surf/surf_feature.cpp', 'imfeat/_surf/SurfDetect.cpp',
                          'imfeat/_surf/SurfDescribe.cpp', 'imfeat/_surf/SurfPoint.cpp',
                          'imfeat/_surf/integral_image/IntegralImage.cpp'],
-                         extra_compile_args=['-I', np.get_include()])]
+                         extra_compile_args=['-I', np.get_include()]),
+               Extension("_imfeat_gist",
+                         ["imfeat/_gist/gist_cython" + source_ext,
+                          'imfeat/_gist/gist.c',
+                          'imfeat/_gist/gist_wrapper.c',
+                          'imfeat/_gist/standalone_image.c'],
+                         extra_compile_args=['-I', np.get_include(), '-D', 'USE_GIST',
+                                             '-D', 'STANDALONE_GIST'],
+                         extra_link_args=['-l', 'fftw3f'])]
 
 setup(name='imfeat',
       cmdclass=cmdclass,

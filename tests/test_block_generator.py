@@ -43,6 +43,16 @@ class Test(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def test_coord_gen_rect(self):
+        vals = [np.asfarray([0, 0, 5, 5, 0, 1]),
+                np.asfarray([0, 5, 5, 5, 0, 1]),
+                np.asfarray([5, 0, 5, 5, 0, 1]),
+                np.asfarray([5, 5, 5, 5, 0, 1])]
+        print(list(imfeat.CoordGeneratorRect((10, 10), (5, 5), (5, 5))))
+        for x, y in zip(vals, imfeat.CoordGeneratorRect((10, 10), (5, 5), (5, 5))):
+            print(x)
+            np.testing.assert_equal(x, y)
+
     def test_block_gen(self):
         img = cv.LoadImage('test_images/lena.jpg')
         bgen = imfeat.BlockGenerator(img, imfeat.CoordGeneratorRect,

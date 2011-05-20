@@ -65,6 +65,21 @@ class TestFeatures(unittest.TestCase):
         for feat_out, image in self._run_all_images(feature):
             print(feat_out)
             print(len(feat_out[0]))
+
+    def test_gist(self):
+        feature = imfeat.GIST()
+        for feat_out, image in self._run_all_images(feature):
+            print(feat_out)
+            print(len(feat_out[0]))
+        # Compare against known output
+        image = Image.open('test_images/lena.ppm')
+        out = imfeat.compute(feature, image)[0]
+        test_string = ' '.join(['%.4f' % x for x in out] + ['\n'])
+        with open('fixtures/gist_lena_output.txt') as fp:
+            true_string = fp.read()
+        self.assertEqual(len(true_string.split()), len(test_string.split()))
+        self.assertEqual(true_string, test_string)
+
             
 if __name__ == '__main__':
     unittest.main()
