@@ -22,6 +22,7 @@ __license__ = 'GPL V3'
 
 import Image
 import cv
+import warnings
 
 
 def _convert_color(image, code, depth, channels):
@@ -206,6 +207,10 @@ def compute(feature_module, image, *args, **kw):
     Raises:
         ValueError: There was a problem converting the color.
     """
+    msg = ('imfeat.compute(feat, image) is deprecated, use feat(image) instead.'
+           ' If you wrote the feature, ensure that the baseclass is '
+           'imfeat.BaseFeature and _not_ object.')
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         modes = feature_module.MODES
     except AttributeError:
