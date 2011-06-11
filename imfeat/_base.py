@@ -1,7 +1,8 @@
 import imfeat
 import warnings
 
-cdef class BaseFeature(object):
+
+class BaseFeature(object):
 
     def __init__(self):
         super(BaseFeature, self).__init__()

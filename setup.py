@@ -33,9 +33,7 @@ except ImportError:
     source_ext = '.c'
     cmdclass = {}
 
-ext_modules = [Extension("_imfeat_base",
-                         ["imfeat/_base" + source_ext]),
-               Extension("_imfeat_histogram",
+ext_modules = [Extension("_imfeat_histogram",
                          ["imfeat/_histogram/histogram" + source_ext,
                           'imfeat/_histogram/histogram_aux.c'],
                          extra_compile_args=['-I', np.get_include()]),

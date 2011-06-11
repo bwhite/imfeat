@@ -109,6 +109,7 @@ cdef class BlockGenerator(object):
     cdef object _coord_gen
 
     def __init__(self, image, coord_gen_cls, *args, **kw):
+        assert(isinstance(image, cv.iplimage))
         self._image = image
         self._coord_gen = coord_gen_cls(image_size=(image.height, image.width), *args, **kw)
         self._image_out = cv.CreateImage((image.width, image.height), image.depth, image.channels)
