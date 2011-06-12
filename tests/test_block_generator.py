@@ -59,7 +59,7 @@ class Test(unittest.TestCase):
         bgen = imfeat.BlockGenerator(img, imfeat.CoordGeneratorRect,
                                      output_size=(200, 200), step_delta=(200, 200))
         try:
-            os.mkdirs('out')
+            os.makedirs('out')
         except OSError:
             pass
         for num, (x, y) in enumerate(bgen):
