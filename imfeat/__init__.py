@@ -1,3 +1,5 @@
+from main import compute, compute_points, convert_image
+from _imfeat import BaseFeature
 import dummy
 import rand
 from _imfeat_autocorrelogram import Autocorrelogram
@@ -8,9 +10,7 @@ from _imfeat_hog_latent import HOGLatent
 from _imfeat_surf import SURF
 from _imfeat_gist import GIST
 from _imfeat_block_generator import CoordGeneratorBase, CoordGeneratorRect, BlockGenerator
-from _base import BaseFeature
 #from _rhog_dalal import rhog as rhog_dalal
 from _bovw import BoVW
 import filter_bank
 from _faces import faces
-from main import compute, compute_points, convert_image

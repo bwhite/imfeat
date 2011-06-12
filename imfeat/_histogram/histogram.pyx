@@ -1,12 +1,13 @@
 import cv
 import numpy as np
 cimport numpy as np
+cimport imfeat
 
 cdef extern from "histogram_aux.h":
     void histogram_joint_fast(float *data, int height, int width, float *min_vals, float *bin_width, np.int32_t *num_bins, np.int32_t *hist)
     void histogram_fast(float *data, int height, int width, float *min_vals, float *bin_width, np.int32_t *num_bins, np.int32_t *hist)
 
-cdef class Histogram(object):
+cdef class Histogram(imfeat.BaseFeature):
     cdef public object MODES
     cdef object mode
     cdef object verbose
