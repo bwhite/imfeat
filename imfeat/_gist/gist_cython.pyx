@@ -1,17 +1,19 @@
 import cv
 import numpy as np
 cimport numpy as np
+cimport imfeat
 
 cdef extern from "gist_wrapper.h":
     void color_gist_scaletab_wrap(np.uint8_t *data, int height, int width, int nblocks, int n_scale,
                                   np.int32_t *orientations_per_scale, np.float32_t *desc, int desc_size)
 
-cdef class GIST(object):
+cdef class GIST(imfeat.BaseFeature):
     cdef public object MODES
     cdef int _nblocks
     cdef np.ndarray _orientations_per_scale
 
     def __init__(self, nblocks=4, orientations_per_scale=(8, 8, 4)):
+        super(GIST, self).__init__()
         self.MODES = [('opencv', 'rgb', 8)]
         self._nblocks = nblocks
         self._orientations_per_scale = np.array(orientations_per_scale, dtype=np.int32)

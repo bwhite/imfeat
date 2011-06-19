@@ -5,6 +5,27 @@ import hashlib
 import numpy as np
 import scipy as sp
 import scipy.io
+import gzip
+import pickle
+
+
+def load_from_umiacs(path, md5hash):
+    import os
+    import urllib
+    name = os.path.basename(path)
+    download = not os.path.exists(path)
+    if os.path.exists(path) and md5hash:
+        with open(path) as fp:
+            if hashlib.md5(fp.read()).hexdigest() != md5hash:
+                download = True
+    if download:
+        url = 'http://umiacs.umd.edu/~bwhite/%s' % name
+        print('Downloading [%s]' % url)
+        data = urllib.urlopen(url).read()
+        with open(path, 'w') as fp:
+            if md5hash:
+                assert(md5hash == hashlib.md5(data).hexdigest())
+            fp.write(data)
 
 
 class TestFeatures(unittest.TestCase):
@@ -58,8 +79,14 @@ class TestFeatures(unittest.TestCase):
             print(len(feat_out[0]))
 
     def test_faces(self):
-        print('faces')
         feature = imfeat.Faces()
+        for feat_out, image in self._run_all_images(feature):
+            print(feat_out)
+            print(len(feat_out[0]))
+
+    def test_autocorrelogram(self):
+        print('Autocorrelogram')
+        feature = imfeat.Autocorrelogram()
         for feat_out, image in self._run_all_images(feature):
             print(feat_out)
             print(len(feat_out[0]))
@@ -74,7 +101,10 @@ class TestFeatures(unittest.TestCase):
         image = Image.open('test_images/lena.ppm')
         out = imfeat.compute(feature, image)[0]
         self.assertEqual(len(out), 254 * 254 * 32)
-        np.testing.assert_equal(hashlib.md5(out).hexdigest(), '18231ad8c359860ee09e8f0fa8b316a1')
+        np.testing.assert_equal(hashlib.md5(out.tostring()).hexdigest(), '3cc2af55af55bd429388d8be52fde356')
+        load_from_umiacs('fixtures/lena_feat.pkl.gz', 'ab4580a8322e18b144c39867aeefa05b')
+        with gzip.GzipFile('fixtures/lena_feat.pkl.gz') as fp:
+            np.testing.assert_almost_equal(out, pickle.load(fp))
 
     def test_gist(self):
         feature = imfeat.GIST()
