@@ -64,19 +64,6 @@ class TestFeatures(unittest.TestCase):
             print(feat_out)
             print(len(feat_out[0]))
 
-
-    def test_surf_random(self):
-        feature = imfeat.SURF()
-        for feat_out, image in self._run_all_images(feature):
-            print(feat_out)
-            print(len(feat_out[0]))
-
-    def test_surf_detect(self):
-        feature = imfeat.SURF(method='detect')
-        for feat_out, image in self._run_all_images(feature):
-            print(feat_out)
-            print(len(feat_out[0]))
-
     def test_hog_latent(self):
         print('Hog Latent')
         feature = imfeat.HOGLatent(2)
