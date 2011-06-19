@@ -16,12 +16,6 @@ cdef class HOGLatent(object):
         self.MODES = [('opencv', 'rgb', 8)]
         self._sbin = sbin
 
-    cdef _make_pyramid(self, image_cv):
-        pass
-
-    cdef _make_feature(self, image):
-        pass
-
     cpdef make_features(self, image_cv):
         cdef np.ndarray image = np.ascontiguousarray(cv.GetMat(image_cv), dtype=np.float64)
         cdef np.ndarray feat_shape = np.zeros(3, dtype=np.int32)
