@@ -13,4 +13,4 @@ from _imfeat_block_generator import CoordGeneratorBase, CoordGeneratorRect, Bloc
 #from _rhog_dalal import rhog as rhog_dalal
 from _bovw import BoVW
 import filter_bank
-from _faces import faces
+from _faces.faces import Faces

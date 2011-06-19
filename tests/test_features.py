@@ -57,6 +57,14 @@ class TestFeatures(unittest.TestCase):
             print(feat_out)
             print(len(feat_out[0]))
 
+    def test_faces(self):
+        print('faces')
+        feature = imfeat.Faces()
+        for feat_out, image in self._run_all_images(feature):
+            print(feat_out)
+            print(len(feat_out[0]))
+
+
     def test_surf_random(self):
         feature = imfeat.SURF()
         for feat_out, image in self._run_all_images(feature):

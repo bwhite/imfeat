@@ -1,6 +1,7 @@
 import cv
 import numpy as np
 cimport numpy as np
+cimport imfeat
 
 cdef extern from "Autocorrelogram.h":
     void autocorrelogram(np.uint8_t *data, int height, int width, int unique_colors,
@@ -8,12 +9,13 @@ cdef extern from "Autocorrelogram.h":
     void convert_colors_rg16(np.uint8_t *data, int size, np.uint8_t *out)
     void convert_colors_rg64(np.uint8_t *data, int size, np.uint8_t *out)
 
-cdef class Autocorrelogram(object):
+cdef class Autocorrelogram(imfeat.BaseFeature):
     cdef public object MODES
     cdef np.ndarray distance_set
     cdef int unique_colors
 
     def __init__(self, distance_set=(1,3,5,7), unique_colors=64):
+        super(Autocorrelogram, self).__init__()
         assert unique_colors == 16 or unique_colors == 64
         self.MODES = [('opencv', 'rgb', 8)]
         self.distance_set = np.ascontiguousarray(distance_set, dtype=np.int32)

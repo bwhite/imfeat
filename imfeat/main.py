@@ -134,13 +134,16 @@ def _convert_cv_rgb(image, mode, depth):
 
 
 def _convert_pil(image, mode):
+    if image.mode == 'RGBA':
+        image = image.convert('RGB')
     if image.mode == 'L':
         if not isinstance(mode, str):
             if mode == ('opencv', 'gray', cv.IPL_DEPTH_8U):
                 cv_im = cv.CreateImageHeader(image.size, cv.IPL_DEPTH_8U, 1)
                 cv.SetData(cv_im, image.tostring())
                 return cv_im
-        raise ValueError('Image must not be gray')
+        # At this point it must be that we want a color image
+        image = image.convert('RGB')
     if isinstance(mode, str):  # TO PIL
         return image.convert(mode)
     elif mode[0] == 'opencv':
@@ -156,7 +159,11 @@ def _convert_cv(image, mode):
         if isinstance(mode, str) and mode == 'L':  # TO PIL
             return Image.fromstring("L", cv.GetSize(image),
                                     image.tostring())
-        raise ValueError('Image must not be gray')
+        # At this point it must be that we want a color image
+        image_convert = cv.CreateImage(cv.GetSize(image), image.depth, 3)
+        cv.CvtColor(image, image_convert, cv.CV_GRAY2BGR)
+        image = image_convert
+    # At this point we assume that the CV image is in BGR format
     if isinstance(mode, str):  # TO PIL
         image = Image.fromstring("RGB", cv.GetSize(image),
                                 _convert_cv_bgr(image, 'rgb',
