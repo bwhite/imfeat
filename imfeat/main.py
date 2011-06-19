@@ -22,6 +22,7 @@ __license__ = 'GPL V3'
 
 import Image
 import cv
+import warnings
 
 
 def _convert_color(image, code, depth, channels):
@@ -179,12 +180,14 @@ def convert_image(image, modes):
     Raises:
         ValueError: There was a problem converting the color.
     """
+    if isinstance(image, cv.cvmat):
+        image = cv.GetImage(image)
     if Image.isImageType(image) and (image.mode == 'L' or image.mode == 'RGB'):
         if image.mode not in modes:
             image = _convert_pil(image, modes[0])
     elif isinstance(image, cv.iplimage) and (image.channels == 1 or image.channels == 3) and image.depth == cv.IPL_DEPTH_8U:
         mode = 'rgb' if image.channels == 3 else 'gray'
-        if ('opencv', cv.IPL_DEPTH_8U, mode) not in modes:
+        if ('opencv', mode, cv.IPL_DEPTH_8U) not in modes:
             image = _convert_cv(image, modes[0])
     else:
         raise ValueError('Unknown image type')
@@ -206,6 +209,10 @@ def compute(feature_module, image, *args, **kw):
     Raises:
         ValueError: There was a problem converting the color.
     """
+    msg = ('imfeat.compute(feat, image) is deprecated, use feat(image) instead.'
+           ' If you wrote the feature, ensure that the baseclass is '
+           'imfeat.BaseFeature and _not_ object.')
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     try:
         modes = feature_module.MODES
     except AttributeError:

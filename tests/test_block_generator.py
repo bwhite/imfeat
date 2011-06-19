@@ -4,6 +4,7 @@ except ImportError:
     import unittest
 import numpy as np
 import cv
+import os
 import imfeat
 # Cheat Sheet (method/test) <http://docs.python.org/library/unittest.html>
 #
@@ -57,10 +58,12 @@ class Test(unittest.TestCase):
         img = cv.LoadImage('test_images/lena.jpg')
         bgen = imfeat.BlockGenerator(img, imfeat.CoordGeneratorRect,
                                      output_size=(200, 200), step_delta=(200, 200))
-        
-        for num, (x, y) in enumerate(bgen):
+        try:
+            os.makedirs('out')
+        except OSError:
             pass
-            #cv.SaveImage('%d.jpg' % num, x)
+        for num, (x, y) in enumerate(bgen):
+            cv.SaveImage('out/%d.jpg' % num, x)
 
 if __name__ == '__main__':
     unittest.main()

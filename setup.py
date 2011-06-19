@@ -33,10 +33,14 @@ except ImportError:
     source_ext = '.c'
     cmdclass = {}
 
-ext_modules = [Extension("_imfeat_histogram",
+ext_modules = [Extension("_imfeat",
+                         ["imfeat/imfeat" + source_ext],
+                         extra_compile_args=['-I', np.get_include()]),
+               Extension("_imfeat_histogram",
                          ["imfeat/_histogram/histogram" + source_ext,
                           'imfeat/_histogram/histogram_aux.c'],
-                         extra_compile_args=['-I', np.get_include()]),
+                         extra_compile_args=['-I', np.get_include()],
+                         include_dirs=['imfeat']),
                Extension("_imfeat_autocorrelogram",
                          ["imfeat/_autocorrelogram/autocorrelogram" + source_ext,
                           'imfeat/_autocorrelogram/Autocorrelogram.cpp'],
