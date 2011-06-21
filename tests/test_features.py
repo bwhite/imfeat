@@ -61,6 +61,9 @@ class TestFeatures(unittest.TestCase):
     def test_histogram_joint_lab(self):
         self._histogram(imfeat.Histogram('lab'))
 
+    def test_meta(self):
+        self._histogram(imfeat.MetaFeature(imfeat.Histogram('lab')))
+
     def test_moments(self):
         feature = imfeat.Moments('rgb', 2)
         for feat_out, image in self._run_all_images(feature):
