@@ -19,6 +19,7 @@ cdef class Histogram(imfeat.BaseFeature):
     cdef object style
 
     def __init__(self, mode, num_bins=(8, 8, 8), style='joint', min_vals=None, max_vals=None, verbose=False):
+        super(Histogram, self).__init__()
         self.MODES = [('opencv', mode, 32)]
         self.verbose = verbose
         try:

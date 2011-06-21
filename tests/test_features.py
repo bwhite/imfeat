@@ -53,6 +53,10 @@ class TestFeatures(unittest.TestCase):
 
     def test_histogram_joint(self):
         self._histogram(imfeat.Histogram('rgb'))
+
+    def test_histogram_joint_spatial(self):
+        img = Image.open('test_images/lena.ppm')
+        np.testing.assert_equal(imfeat.Histogram(mode='rgb')(img), imfeat.SpatialHistogram(mode='rgb')(img))
   
     def test_histogram_joint_lab(self):
         self._histogram(imfeat.Histogram('lab'))

@@ -13,3 +13,4 @@ from _imfeat_block_generator import CoordGeneratorBase, CoordGeneratorRect, Bloc
 from _bovw import BoVW
 import filter_bank
 from _faces.faces import Faces
+from _spatial_histogram import SpatialHistogram

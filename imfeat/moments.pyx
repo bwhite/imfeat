@@ -1,9 +1,9 @@
 import cv
 import numpy as np
 cimport numpy as np
+cimport imfeat
 
-
-cdef class Moments(object):
+cdef class Moments(imfeat.BaseFeature):
     cdef public object MODES
     cdef int _num_moments
 
@@ -14,6 +14,7 @@ cdef class Moments(object):
             mode: Open CV image mode (e.g., rgb, luv, hsv)
             num_moments: Moments to compute (2 implies mean + variance)
         """
+        super(Moments, self).__init__()
         assert num_moments > 0
         self.MODES = [('opencv', mode, 32)]
         self._num_moments = num_moments
