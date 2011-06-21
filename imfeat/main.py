@@ -189,6 +189,10 @@ def convert_image(image, modes):
     """
     if isinstance(image, cv.cvmat):
         image = cv.GetImage(image)
+    if Image.isImageType(image) and image.mode == 'LA':
+        image = image.convert('L')
+    if Image.isImageType(image) and image.mode not in ('L', 'RGB'):
+        image = image.convert('RGB')
     if Image.isImageType(image) and (image.mode == 'L' or image.mode == 'RGB'):
         if image.mode not in modes:
             image = _convert_pil(image, modes[0])
@@ -197,7 +201,10 @@ def convert_image(image, modes):
         if ('opencv', mode, cv.IPL_DEPTH_8U) not in modes:
             image = _convert_cv(image, modes[0])
     else:
-        raise ValueError('Unknown image type')
+        if Image.isImageType(image):
+            raise ValueError('Unknown image type PIL Mode[%s]' % image.mode)
+        else:
+            raise ValueError('Unknown image type')
     return image
 
 
