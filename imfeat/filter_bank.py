@@ -22,7 +22,6 @@ __license__ = 'GPL V3'
 
 import numpy as np
 import warnings
-from scipy.signal import fftn, ifftn
 
 MODES = ['L']
 _filters = None
@@ -109,6 +108,7 @@ def fftconvolve_cache(in1, in2, mode="full", cache1=None, cache2=None):
     recomputing fft.
 
     """
+    from scipy.signal import fftn, ifftn
     s1 = np.array(in1.shape)
     s2 = np.array(in2.shape)
     complex_result = False
