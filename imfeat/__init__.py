@@ -8,7 +8,7 @@ from _imfeat_moments import Moments
 from _imfeat_rhog import RHOG
 from _imfeat_hog_latent import HOGLatent
 from _imfeat_gist import GIST
-from _imfeat_block_generator import CoordGeneratorBase, CoordGeneratorRect, BlockGenerator
+from _imfeat_block_generator import CoordGeneratorBase, CoordGeneratorRect, BlockGenerator, CoordGeneratorRectRotate
 #from _rhog_dalal import rhog as rhog_dalal
 from _bovw import BoVW
 import filter_bank

@@ -2,6 +2,10 @@ import numpy as np
 cimport numpy as np
 import cv
 import imfeat
+try:
+    import cv2
+except ImportError:
+    print('OpenCV 2.3 needed for some functionality (you can ignore this but an error will be thrown if you use this functionality)')
 
 cdef class CoordGeneratorBase(object):
     cdef object _mode
@@ -44,6 +48,14 @@ cdef class CoordGeneratorBase(object):
             trans_cv = cv.CreateMatHeader(2, 3, cv.CV_64FC1)
             cv.SetData(trans_cv, trans.tostring())
             return (int(width), int(height)), trans_cv
+        elif mode == 'similarity_cv2':
+            tly, tlx, height, width, angle, scale = v
+            cts = scale * np.cos(angle)
+            sts = scale * np.sin(angle)
+            trans = np.array([[cts, sts, -cts * tlx - sts * tly],
+                              [-sts, cts, sts * tlx - cts * tly]])
+            return (int(width), int(height)), trans
+
         elif self._mode == 'euclidean_pil':
             # (left, upper, right, lower) pixel coords compatible with
             # PIL's Image.crop.  x is [left, right) and y is [upper, lower)
@@ -102,13 +114,46 @@ cdef class CoordGeneratorRect(CoordGeneratorBase):
         raise StopIteration
 
 
+cdef class CoordGeneratorRectRotate(CoordGeneratorBase):
+    cdef object _cgr
+    cdef int _angle_steps
+    cdef float _angle_delta
+    cdef object _value
+    cdef int _cur_angle_step
+    
+    def __init__(self, image_size, output_size, step_delta, angle_steps, *args, **kw):
+        """
+        Args:
+            image_size: (height, width)
+            output_size: (height, width)
+            step_delta: (delta_y, delta_x)
+            angle_steps: Number of steps for the angle
+        """
+        self._cgr = CoordGeneratorRect(image_size, output_size, step_delta)
+        self._angle_steps = angle_steps
+        self._angle_delta = 2 * np.pi / angle_steps
+        self._value = None  # _value: (tly, tlx, height, width, angle, scale) of type
+        self._cur_angle_step = 1  # This is 1 because we want to only perform _angle_steps rotations
+
+    def __next__(self):
+        if self._value is None or self._cur_angle_step >= self._angle_steps:
+            self._value = self._cgr.next()
+            self._cur_angle_step = 1
+        else:
+            self._value[4] += self._angle_delta
+            self._cur_angle_step += 1
+        return self._value.copy()
+
+
 cdef class BlockGenerator(object):
+    """Generates image blocks given a Coord Generator.  Ignores blocks that would be outside of the image."""
 
     cdef object _image
     cdef object _image_out
     cdef object _coord_gen
 
     def __init__(self, image, coord_gen_cls, *args, **kw):
+        image = imfeat.convert_image(image, [('opencv', 'bgr', 8), ('opencv', 'gray', 8)])
         assert(isinstance(image, cv.iplimage))
         self._image = image
         self._coord_gen = coord_gen_cls(image_size=(image.height, image.width), *args, **kw)
@@ -118,9 +163,20 @@ cdef class BlockGenerator(object):
         return self
 
     def __next__(self):
-        sim = self._coord_gen.next()
-        width_height, trans = self._coord_gen.format_output(sim, 'similarity_cv')
-        if (self._image_out.width, self._image_out.height) != width_height:
-            self._image_out = cv.CreateImage(width_height, self._image.depth, self._image.channels)
-        cv.WarpAffine(self._image, self._image_out, trans)
-        return self._image_out, sim
+        while 1:
+            sim = self._coord_gen.next()
+            width_height, trans = self._coord_gen.format_output(sim, 'similarity_cv2')
+            if (self._image_out.width, self._image_out.height) != width_height:
+                self._image_out = cv.CreateImage(width_height, self._image.depth, self._image.channels)
+            # See if coords are in bounds
+            bounds = np.asfarray([[[0, 0, 1],
+                                   [self._image_out.width, 0, 1],
+                                   [0, self._image_out.height, 1],
+                                   [self._image_out.width, self._image_out.height, 1]]])
+            trans_inv = np.resize(trans, (3, 3))
+            trans_inv[2, :] = np.array([0, 0, 1])
+            bounds_trans = cv2.transform(bounds, np.linalg.inv(trans_inv))
+            if np.any(bounds_trans < 0) or np.any(bounds_trans[0, :, 0] > self._image.width) or np.any(bounds_trans[0, :, 1] > self._image.height):
+                continue
+            cv.WarpAffine(self._image, self._image_out, trans)
+            return self._image_out, sim
