@@ -34,3 +34,16 @@ void histogram_fast(float *data, int height, int width, float *min_vals, float *
         }
     }
 }
+
+void histogram_gray(float *data, int height, int width, float min_val, float bin_width, int32_t num_bins, int32_t *hist) {
+    int i, ind;
+    int size = height * width;
+    for (i = 0; i < size; i++) {
+        ind = (data[i] - min_val) / bin_width;
+        if (ind < 0)
+            ind = 0;
+        else if (ind >= num_bins)
+            ind = num_bins - 1;
+        ++hist[ind];
+    }
+}

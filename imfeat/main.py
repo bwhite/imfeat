@@ -73,7 +73,7 @@ def _convert_depth(image, depth):
             image_f = cv.CreateImage(cv.GetSize(image), depth, image.channels)
             cv.CvtScale(image, image_f, 1 / 255.)
             image = image_f
-    elif depth == cv.IPL_DEPTH_8U:
+    elif depth == cv.IPL_DEPTH_8U:  # TODO Test to see if these conversions are correct
         if image.depth == cv.IPL_DEPTH_32F:
             image_f = cv.CreateImage(cv.GetSize(image), depth, image.channels)
             cv.CvtScale(image, image_f, 255.)
@@ -197,14 +197,20 @@ def convert_image(image, modes):
         if image.mode not in modes:
             image = _convert_pil(image, modes[0])
     elif isinstance(image, cv.iplimage) and (image.channels == 1 or image.channels == 3) and image.depth == cv.IPL_DEPTH_8U:
-        mode = 'rgb' if image.channels == 3 else 'gray'
+        mode = 'bgr' if image.channels == 3 else 'gray'
         if ('opencv', mode, cv.IPL_DEPTH_8U) not in modes:
+            image = _convert_cv(image, modes[0])
+    elif isinstance(image, cv.iplimage) and (image.channels == 1 or image.channels == 3) and image.depth == cv.IPL_DEPTH_32F:
+        mode = 'bgr' if image.channels == 3 else 'gray'
+        if ('opencv', mode, cv.IPL_DEPTH_32F) not in modes:
+            # Convert to 8bit to bgr
+            image = _convert_depth(image, cv.IPL_DEPTH_8U)
             image = _convert_cv(image, modes[0])
     else:
         if Image.isImageType(image):
             raise ValueError('Unknown image type PIL Mode[%s]' % image.mode)
         else:
-            raise ValueError('Unknown image type')
+            raise ValueError('Unknown image type[%s]' % repr(image))
     return image
 
 

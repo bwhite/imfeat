@@ -153,7 +153,8 @@ cdef class BlockGenerator(object):
     cdef object _coord_gen
 
     def __init__(self, image, coord_gen_cls, *args, **kw):
-        image = imfeat.convert_image(image, [('opencv', 'bgr', 8), ('opencv', 'gray', 8)])
+        image = imfeat.convert_image(image, [('opencv', 'bgr', 8), ('opencv', 'gray', 8),
+                                             ('opencv', 'bgr', 32), ('opencv', 'gray', 32)])
         assert(isinstance(image, cv.iplimage))
         self._image = image
         self._coord_gen = coord_gen_cls(image_size=(image.height, image.width), *args, **kw)
