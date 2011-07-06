@@ -15,3 +15,10 @@ import filter_bank
 from _faces.faces import Faces
 from _spatial_histogram import SpatialHistogram
 from _meta import MetaFeature
+try:  # Try to import these packages to aid pyinstaller
+    import numpy as _np
+    import cv as _cv
+    import Image
+    import cv2 as _cv2
+except ImportError:
+    pass

@@ -2,11 +2,11 @@ import numpy as np
 cimport numpy as np
 import cv
 import imfeat
+
 try:
     import cv2
 except ImportError:
     print('OpenCV 2.3 needed for some functionality (you can ignore this but an error will be thrown if you use this functionality)')
-
 cdef class CoordGeneratorBase(object):
     cdef object _mode
     cdef object _sim_tuple
