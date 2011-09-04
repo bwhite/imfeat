@@ -22,19 +22,15 @@ class ObjectBank(imfeat.BaseFeature):
         self.feat_path = os.path.join(self._temp_dir_out, '00000.jpg.feat')
 
     def __del__(self):
-        pass
-        #shutil.rmtree(self._temp_dir_in)
-        #shutil.rmtree(self._temp_dir_out)
+        shutil.rmtree(self._temp_dir_in)
+        shutil.rmtree(self._temp_dir_out)
 
     def make_features(self, image):
         cv.SaveImage(self.image_path, image)
         orig_dir = os.path.abspath('.')
         try:
             os.chdir(self.path)
-            print(os.path.abspath('.'))
-            print(os.listdir('.'))
             cmd = './OBmain %s/ %s/' % (self._temp_dir_in, self._temp_dir_out)
-            print('======================   %s -----------------------' % cmd)
             subprocess.call(cmd.split())
         finally:
             os.chdir(orig_dir)
@@ -42,4 +38,5 @@ class ObjectBank(imfeat.BaseFeature):
             with open(self.feat_path) as fp:
                 return [np.asfarray([float(x.rstrip()) for x in fp])]
         finally:
+            os.remove(self.image_path)
             os.remove(self.feat_path)

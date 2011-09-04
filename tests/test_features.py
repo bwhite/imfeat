@@ -158,7 +158,7 @@ class TestFeatures(unittest.TestCase):
     def test_object_bank(self):
         feature = imfeat.ObjectBank()
         f0 = feature(cv.LoadImage('test_images/00000.jpg'))
-        f1 = feature(cv.LoadImage('test_images/00001.jpg'))
+        f1 = feature(cv.LoadImage('test_images/lena.jpg'))
         print(f0)
         print(f1)
 
