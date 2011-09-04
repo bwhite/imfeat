@@ -155,6 +155,12 @@ class TestFeatures(unittest.TestCase):
         self.assertEqual(len(true_string.split()), len(test_string.split()))
         self.assertEqual(true_string, test_string)
 
-            
+    def test_object_bank(self):
+        feature = imfeat.ObjectBank()
+        f0 = feature(cv.LoadImage('test_images/00000.jpg'))
+        f1 = feature(cv.LoadImage('test_images/00001.jpg'))
+        print(f0)
+        print(f1)
+
 if __name__ == '__main__':
     unittest.main()
