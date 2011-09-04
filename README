@@ -1,5 +1,5 @@
 imfeat: Image Feature Descriptor Library for Python
-License: GPLv3
+License: GPLv3 (except for third party libraries which have their own licenses)
 
 Goal: Standardize image feature descriptors to facilitate reuse
 
