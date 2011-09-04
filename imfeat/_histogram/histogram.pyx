@@ -18,11 +18,13 @@ cdef class Histogram(imfeat.BaseFeature):
     cdef np.ndarray bin_width
     cdef int num_hist_bins
     cdef object style
+    cdef object norm
 
-    def __init__(self, mode, num_bins=8, style='joint', min_vals=None, max_vals=None, verbose=False):
+    def __init__(self, mode, num_bins=8, style='joint', min_vals=None, max_vals=None, norm=True, verbose=False):
         super(Histogram, self).__init__()
         self.MODES = [('opencv', mode, 32)]
         self.verbose = verbose
+        self.norm = norm
         try:
             # From http://opencv.willowgarage.com/documentation/cpp/miscellaneous_image_transformations.html
             min_max_vals = dict([('bgr', ((0, 0, 0), (1, 1, 1))),
@@ -76,5 +78,8 @@ cdef class Histogram(imfeat.BaseFeature):
                                <np.float32_t *>self.bin_width.data, <np.int32_t *>self.num_bins.data, <np.int32_t *>out.data)
             else:
                 raise ValueError('Style must be joint or planar!')
-        return [np.asfarray(out) / np.sum(out)]
+        if self.norm:
+            return [np.asfarray(out) / np.sum(out)]
+        else:
+            return [np.asfarray(out)]
 
