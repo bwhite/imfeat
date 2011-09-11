@@ -9,6 +9,7 @@ import gzip
 import pickle
 import cv
 import cv2
+import glob
 
 
 def load_from_umiacs(path, md5hash):
@@ -157,10 +158,31 @@ class TestFeatures(unittest.TestCase):
 
     def test_object_bank(self):
         feature = imfeat.ObjectBank()
-        f0 = feature(cv.LoadImage('test_images/00000.jpg'))
-        f1 = feature(cv.LoadImage('test_images/lena.jpg'))
+        im0 = cv.LoadImage('test_images/00000.jpg')
+        im1 = cv.LoadImage('test_images/lena.jpg')
+        f0 = feature(im0)
+        print((im0.height, im0.width))
         print(f0)
+        print(f0.shape)
+        f1 = feature(im1)
+        print((im1.height, im1.width))
         print(f1)
+        print(f1.shape)
+
+    def test_interface(self):
+        """Simple test of the basic feature interface"""
+        features = [imfeat.ObjectBank(), imfeat.GIST(), imfeat.HOGLatent(2),
+                    imfeat.Autocorrelogram(), imfeat.GradientHistogram(), imfeat.Histogram('gray'),
+                    imfeat.RHOG(gray=False), imfeat.RHOG(gray=True), imfeat.Moments('rgb', 2),
+                    imfeat.Histogram('rgb'), imfeat.SpatialHistogram(mode='rgb', num_rows=2, num_cols=2)]
+        images = [Image.open(image_fn) for image_fn in glob.glob('test_images/*')]
+        images += [cv.LoadImage(image_fn) for image_fn in glob.glob('test_images/*') if image_fn not in ['test_images/test3.gif']]
+        images += [cv.LoadImageM(image_fn) for image_fn in glob.glob('test_images/*') if image_fn not in ['test_images/test3.gif']]
+        #images += [cv2.imread(image_fn) for image_fn in glob.glob('test_images/*') if image_fn not in ['test_images/test3.gif']]
+        for feature in features:
+            feats = [np.array(feature(image).shape) for image in images]
+            for f in feats[1:]:
+                np.testing.assert_equal(feats[0], f)
 
 if __name__ == '__main__':
     unittest.main()

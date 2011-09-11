@@ -5,6 +5,8 @@ import imfeat
 import shutil
 import tempfile
 import subprocess
+import glob
+import stat
 from . import __path__
 
 
@@ -13,11 +15,27 @@ class ObjectBank(imfeat.BaseFeature):
     def __init__(self):
         super(ObjectBank, self).__init__()
         self.MODES = [('opencv', 'bgr', 8)]
-        self.path = (__path__[0] + '/data/')
-        if not os.path.exists(self.path + 'OBmain'):
-            raise OSError('File not found! [%s]' % (self.path + 'OBmain'))
         self._temp_dir_in = tempfile.mkdtemp()
         self._temp_dir_out = tempfile.mkdtemp()
+        self.model_path = '%s/models' % self._temp_dir_out
+        if os.path.exists('OBmain'):  # Use curdir
+            self.path = os.path.abspath('.')
+            self.ob_path = './OBmain'
+            try:
+                os.chmod(self.ob_path, stat.S_IXUSR | stat.S_IRUSR)
+            except OSError:
+                pass
+            open(self.model_path, 'w').write('\n'.join(glob.glob('*.text')) + '\n')
+        else:
+            self.path = __path__[0]
+            self.ob_path = 'data/OBmain'
+            try:
+                os.chmod(self.ob_path, stat.S_IXUSR | stat.S_IRUSR)
+            except OSError:
+                pass
+            open(self.model_path, 'w').write('\n'.join(glob.glob(self.path + '/data/models/*.text')) + '\n')
+            if not os.path.exists(self.path + '/data/OBmain'):
+                raise OSError('File not found! [%s]' % (self.path + 'OBmain'))
         self.image_path = os.path.join(self._temp_dir_in, '00000.jpg')
         self.feat_path = os.path.join(self._temp_dir_out, '00000.jpg.feat')
 
@@ -30,7 +48,7 @@ class ObjectBank(imfeat.BaseFeature):
         orig_dir = os.path.abspath('.')
         try:
             os.chdir(self.path)
-            cmd = './OBmain %s/ %s/' % (self._temp_dir_in, self._temp_dir_out)
+            cmd = '%s -M %s %s/ %s/' % (self.ob_path, self.model_path, self._temp_dir_in, self._temp_dir_out)
             subprocess.call(cmd.split())
         finally:
             os.chdir(orig_dir)

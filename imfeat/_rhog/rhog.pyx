@@ -1,6 +1,7 @@
 import cv
 import numpy as np
 cimport numpy as np
+cimport imfeat
 
 cdef extern from "rhog_aux.h":
     void compute_hog(np.uint8_t *image, int height, int width,
@@ -12,7 +13,7 @@ cdef extern from "rhog_aux.h":
                          int block_diameter, int orientation_bins)
 
 
-cdef class RHOG(object):
+cdef class RHOG(imfeat.BaseFeature):
     cdef public object MODES
     cdef int _cell_diameter
     cdef int _block_diameter
