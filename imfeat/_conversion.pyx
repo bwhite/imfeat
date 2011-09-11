@@ -23,9 +23,12 @@ def get_new_mode(old_mode):
 
 
 def image_to_mode(image):
+    # Need to do this initial conversion for cvmat's
+    if isinstance(image, cv.cvmat):
+        image = cv.GetImage(image)
     if Image.isImageType(image):
-        if image.mode.lower() in ('l', 'rgb'):
-            return {'type': 'pil', 'mode': {'l': 'gray', 'rgb': 'rgb'}[image.mode.lower()], 'dtype': 'uint8'}
+        if image.mode.lower() in ('l', 'rgb', 'rgba'):
+            return {'type': 'pil', 'mode': {'l': 'gray', 'rgb': 'rgb', 'rgba': 'rgb'}[image.mode.lower()], 'dtype': 'uint8'}
         else:
             raise ValueError('Unknown image type: PIL Mode[%s] (supported: L, RGB)' % image.mode)
     elif isinstance(image, cv.iplimage):
