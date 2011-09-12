@@ -59,8 +59,8 @@ void process_feat_size(int height, int width, int sbin, int *out) {
        out: Array of 3 elements, will be filled with the feature size
    */
   int dims[2];
-  dims[0] = width;
-  dims[1] = height;
+  dims[0] = height;
+  dims[1] = width;
   int blocks[2];
   blocks[0] = (int)round((double)dims[0]/(double)sbin);
   blocks[1] = (int)round((double)dims[1]/(double)sbin);
@@ -77,8 +77,8 @@ void process(double *im_rowmajor, int height, int width, int sbin, double *feat,
   double *im = (double *)malloc(height * width * 3 * sizeof(double));
   convert_rm_to_cm(im_rowmajor, im, height, width);
   int dims[2];
-  dims[0] = width;
-  dims[1] = height;
+  dims[0] = height; // TODO(brandyn): Not sure if these are correct
+  dims[1] = width;
 
   // memory for caching orientation histograms & their norms
   int blocks[2];

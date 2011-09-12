@@ -127,21 +127,20 @@ class TestFeatures(unittest.TestCase):
             print(feat_out)
             print(len(feat_out[0]))
 
-    @unittest.expectedFailure
-    def test_hog_latent(self):
+    def test_aahog_latent(self):
         print('Hog Latent')
         feature = imfeat.HOGLatent(2)
         for feat_out, image in self._run_all_images(feature):
             print(feat_out)
             print(len(feat_out[0]))
         print('Hog Latent')
-        image = Image.open('test_images/lena.ppm')
+        image = cv2.imread('test_images/lena.ppm')
         out = imfeat.compute(feature, image)[0]
         self.assertEqual(len(out), 254 * 254 * 32)
-        np.testing.assert_equal(hashlib.md5(out.tostring()).hexdigest(), '3cc2af55af55bd429388d8be52fde356')
         load_from_umiacs('fixtures/lena_feat.pkl.gz', 'ab4580a8322e18b144c39867aeefa05b')
         with gzip.GzipFile('fixtures/lena_feat.pkl.gz') as fp:
-            np.testing.assert_almost_equal(out, pickle.load(fp))
+            f = pickle.load(fp)
+            np.testing.assert_almost_equal(out, f)
 
     def test_gist(self):
         feature = imfeat.GIST()

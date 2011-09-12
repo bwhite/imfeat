@@ -15,13 +15,23 @@ cdef class HOGLatent(imfeat.BaseFeature):
 
     def __init__(self, sbin=2):
         super(HOGLatent, self).__init__()
-        self.MODES = [('opencv', 'rgb', 8)]
+        self.MODES = [{'type': 'numpy', 'dtype': 'uint8', 'mode': 'rgb'}]
         self._sbin = sbin
 
-    cpdef make_features(self, image_cv):
-        cdef np.ndarray image = np.ascontiguousarray(cv.GetMat(image_cv), dtype=np.float64)
+    cpdef make_feature_mask(self, image_input):
+        cdef np.ndarray image = np.ascontiguousarray(image_input, dtype=np.float64)
         cdef np.ndarray feat_shape = np.zeros(3, dtype=np.int32)
-        process_feat_size(image_cv.height, image_cv.width, self._sbin, <np.int32_t *>feat_shape.data)
+        process_feat_size(image.shape[0], image.shape[1], self._sbin, <np.int32_t *>feat_shape.data)
         cdef np.ndarray out = np.zeros(feat_shape[::-1], dtype=np.float64)
-        process(<np.float64_t *>image.data, image_cv.height, image_cv.width, self._sbin, <np.float64_t *>out.data, np.prod(feat_shape))
+        process(<np.float64_t *>image.data, image.shape[0], image.shape[1], self._sbin, <np.float64_t *>out.data, np.prod(feat_shape))
+        print((out.shape[0], out.shape[1], out.shape[2]))
+        return np.ascontiguousarray(out.T)
+
+
+    cpdef make_features(self, image_input):
+        cdef np.ndarray image = np.ascontiguousarray(image_input, dtype=np.float64)
+        cdef np.ndarray feat_shape = np.zeros(3, dtype=np.int32)
+        process_feat_size(image.shape[0], image.shape[1], self._sbin, <np.int32_t *>feat_shape.data)
+        cdef np.ndarray out = np.zeros(feat_shape[::-1], dtype=np.float64)
+        process(<np.float64_t *>image.data, image.shape[0], image.shape[1], self._sbin, <np.float64_t *>out.data, np.prod(feat_shape))
         return [np.ascontiguousarray(out.T.ravel())]
