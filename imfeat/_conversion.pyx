@@ -147,7 +147,11 @@ def convert_image(image, mode_or_modes, image_mode=None):
         elif out_mode['type'] == 'opencv':
             image = cv.GetImage(cv.fromarray(image))
             image_mode['type'] = 'opencv'
-    assert image_mode == out_mode
+    try:
+        assert image_mode == out_mode
+    except:
+        print('ImageMode[%s] != OutMode[%s]' % (str(image_mode), str(out_mode)))
+        raise
     return image
 
 
