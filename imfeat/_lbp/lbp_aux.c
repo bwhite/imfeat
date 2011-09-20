@@ -28,3 +28,19 @@ void make_lbp_mask_fast(uint8_t *data, const int height, const int width, uint8_
     out[height_m1 * width] = out[height_m1 * width + 1];  // BL corner
     out[height * width - 1] = out[height * width - 2];  // BR corner
 }
+
+#define min(i, j) (((i) < (j)) ? (i) : (j))
+#define max(i, j) (((i) > (j)) ? (i) : (j))
+
+void make_lbp_mask_pool_fast(uint8_t *data, const int height, const int width, const int radius, uint8_t *hist) {
+    int i, j, k, l, off;
+    const int height_m1 = height - 1;
+    const int width_m1 = width - 1;
+    for (i = 0; i < height; ++i)
+        for (j = 0; j < width; ++j) {
+            off = (i * width + j) * 256;
+            for (k = -radius; k <= radius; ++k)
+                for (l = -radius; l <= radius; ++l)
+                    ++hist[off + data[min(max(i + k, 0), height_m1) * width + min(max(j + l, 0), width_m1)]];
+        }
+}

@@ -13,7 +13,7 @@ from _imfeat_gist import GIST
 from _imfeat_lbp import LBP
 from _imfeat_block_generator import CoordGeneratorBase, CoordGeneratorRect, BlockGenerator, CoordGeneratorRectRotate
 #from _rhog_dalal import rhog as rhog_dalal
-from _bovw import BoVW
+from _imfeat_bovw import BoVW
 import filter_bank
 from _faces.faces import Faces
 from _spatial_histogram import SpatialHistogram

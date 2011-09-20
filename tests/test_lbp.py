@@ -19,12 +19,15 @@ class Test(unittest.TestCase):
 
     def test_save_lena(self):
         feat = imfeat.LBP()
-        out = feat.make_feature_mask(imfeat.convert_image(cv2.imread('test_images/lena.jpg'), feat.MODES))
-        try:
-            os.makedirs('out')
-        except OSError:
-            pass
-        cv2.imwrite('out/lena_lbp.jpg', out)
+        for x in range(10):
+            out = feat.make_feature_mask(imfeat.convert_image(cv2.imread('test_images/lena.jpg'), feat.MODES), pool_radius=x)
+            print(out.shape)
+            out = out.reshape(out.shape[:2])
+            try:
+                os.makedirs('out')
+            except OSError:
+                pass
+            cv2.imwrite('out/lena_lbp-%d.jpg' % x, out)
 
     def test_patterns(self):
         feat = imfeat.LBP()

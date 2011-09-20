@@ -77,7 +77,7 @@ void process(double *im_rowmajor, int height, int width, int sbin, double *feat,
   double *im = (double *)malloc(height * width * 3 * sizeof(double));
   convert_rm_to_cm(im_rowmajor, im, height, width);
   int dims[2];
-  dims[0] = height; // TODO(brandyn): Not sure if these are correct
+  dims[0] = height;
   dims[1] = width;
 
   // memory for caching orientation histograms & their norms
