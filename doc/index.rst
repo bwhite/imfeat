@@ -22,6 +22,46 @@ Utility Calls
 ..  autofunction:: imfeat.image_tostring
 ..  autofunction:: imfeat.image_fromstring
 
-Classes
+Features
 -----------
+..  autoclass:: imfeat.GradientHistogram
+    :members:
 
+..  autoclass:: imfeat.Autocorrelogram
+    :members:
+
+..  autoclass:: imfeat.Histogram
+    :members:
+
+..  autoclass:: imfeat.Moments
+    :members:
+
+..  autoclass:: imfeat.RHOG
+    :members:
+
+..  autoclass:: imfeat.HOGLatent
+    :members:
+
+..  autoclass:: imfeat.GIST
+    :members:
+
+..  autoclass:: imfeat.LBP
+    :members:
+
+..  autoclass:: imfeat.BoVW
+    :members:
+
+..  autoclass:: imfeat.Faces
+    :members:
+
+..  autoclass:: imfeat.SpatialHistogram
+    :members:
+
+..  autoclass:: imfeat.MetaFeature
+    :members:
+
+..  autoclass:: imfeat.ObjectBank
+    :members:
+
+..  autoclass:: imfeat.rand
+    :members:
