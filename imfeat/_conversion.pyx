@@ -194,21 +194,24 @@ def resize_image(image, height, width=None, image_mode=None):
     return convert_image(image, image_mode, image_mode=temp_mode)
 
 
-def image_fromstring(image_data, mode_or_modes):
+def image_fromstring(image_data, mode_or_modes=None):
     """Convert an image from a string (using PIL's image IO)
 
     Args:
         image_data: Binary image data
         mode_or_modes: List of image modes or a single image mode.  A mode is
-            a dict {'type': type, 'dtype': dtype, 'mode': mode}
+            a dict {'type': type, 'dtype': dtype, 'mode': mode}. If None
+            (default) then any output type is acceptable (most natural is used).
             type: Valid options are 'opencv', 'numpy', 'pil'
             dtype: Valid options are 'uint8', 'float32'
             mode: Valid options are 'gray', 'rgb', 'bgr', 'hls', 'hsv',
-                'lab', 'luv', 'xyz', 'ycrcb'
+                'lab', 'luv', 'xyz', 'ycrcb'.
 
     Returns:
         String of binary image data
     """
+    if mode_or_modes is None:
+        mode_or_modes = {'type': 'pil', 'dtype': 'uint8', 'mode': 'rgb'}
     return convert_image(Image.open(StringIO.StringIO(image_data)), mode_or_modes)
 
 

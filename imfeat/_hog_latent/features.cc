@@ -97,7 +97,6 @@ void process(double *im_rowmajor, int height, int width, int sbin, double *feat,
   int visible[2];
   visible[0] = blocks[0]*sbin;
   visible[1] = blocks[1]*sbin;
-  
   for (int x = 1; x < visible[1]-1; x++) {
     for (int y = 1; y < visible[0]-1; y++) {
       // first color channel

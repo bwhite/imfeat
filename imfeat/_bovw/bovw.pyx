@@ -21,7 +21,13 @@ __license__ = 'GPL V3'
 
 import numpy as np
 import scipy as sp
-import scipy.cluster
+try:
+    import scipy.cluster
+except RuntimeError:
+    import os
+    import tempfile
+    os.environ['HOME'] = tempfile.gettempdir()
+    import scipy.cluster
 import cv
 import numpy as np
 cimport numpy as np
@@ -56,12 +62,15 @@ cdef class BoVW(imfeat.BaseFeature):
         cdef np.ndarray bovw = np.zeros((2 ** (self.levels - 1), 2 ** (self.levels - 1), self.max_values), dtype=np.int32)
         cdef np.ndarray bovw_coarse
         cdef np.ndarray neighbor_map = np.ascontiguousarray(self.feature_point_func(image), dtype=np.int32)
+        assert np.max(neighbor_map) < self.max_values
+        assert 0 <= np.min(neighbor_map)
         bovw_fast_hist(<np.int32_t *>neighbor_map.data, <np.int32_t *>bovw.data,
-                       neighbor_map.shape[0], neighbor_map.shape[0], self.max_values, self.levels - 1)
+                       neighbor_map.shape[0], neighbor_map.shape[1], self.max_values, self.levels - 1)
         # Build the output array
         out = [bovw]
         for x in range(self.levels - 1):
             bovw_coarse = np.zeros((bovw.shape[0] / 2, bovw.shape[1] / 2, bovw.shape[2]))
+            assert bovw_coarse.shape[2] == bovw.shape[2]
             bovw_fast_sum(<np.int32_t *>bovw.data, <np.int32_t *>bovw_coarse.data, bovw.shape[0], bovw.shape[1], bovw.shape[2])
             bovw = bovw_coarse
             out.append(bovw)

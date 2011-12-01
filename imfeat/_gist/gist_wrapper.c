@@ -14,8 +14,8 @@ void color_gist_scaletab_wrap(uint8_t *data, int height, int width, int nblocks,
     }
 
     float *desc_out = color_gist_scaletab(im, nblocks, n_scale, orientations_per_scale);
-
-    memcpy(desc, desc_out, desc_size * sizeof(float));
+    if (desc_out != NULL)
+        memcpy(desc, desc_out, desc_size * sizeof(float));
     free(desc_out);
     color_image_delete(im);
 }

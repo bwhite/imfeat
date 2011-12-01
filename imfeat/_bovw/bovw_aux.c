@@ -8,8 +8,12 @@ void bovw_fast_hist(int32_t *neighbor_map, int32_t *bovw, const int height, cons
     const int level_bins = 1 << level;
     for (i = 0; i < height; ++i) {
         bin_i = i * height_inv * level_bins;
+        if (height <= bin_i)
+            bin_i = height - 1;
         for (j = 0; j < width; ++j) {
             bin_j = j * width_inv * level_bins;
+            if (width <= bin_j)
+                bin_j = width - 1;
             ++bovw[(bin_i * level_bins + bin_j) * bins + neighbor_map[i * width + j]];
         }
     }
