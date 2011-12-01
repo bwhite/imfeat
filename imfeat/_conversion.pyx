@@ -78,14 +78,13 @@ def convert_image(image, mode_or_modes, image_mode=None):
     numpy: 'bgr'
     pil: 'rgb'
 
-
     :param image: A PIL image or an OpenCV BGR/Gray image (8 bits per channel)
     :param mode_or_modes: List of image modes or a single image mode.  A mode is
         a dict {'type': type, 'dtype': dtype, 'mode': mode}
         type: Valid options are 'opencv', 'numpy', 'pil'
         dtype: Valid options are 'uint8', 'float32'
         mode: Valid options are 'gray', 'rgb', 'bgr', 'hls', 'hsv',
-            'lab', 'luv', 'xyz', 'ycrcb'
+        'lab', 'luv', 'xyz', 'ycrcb'
     :param image_mode: Mode corresponding to the input image, if None then
         the depth and type will be detected from the input and the depth
         will be assumed to be the default color for the type (see above).
@@ -200,7 +199,7 @@ def image_fromstring(image_data, mode_or_modes=None):
         type: Valid options are 'opencv', 'numpy', 'pil'
         dtype: Valid options are 'uint8', 'float32'
         mode: Valid options are 'gray', 'rgb', 'bgr', 'hls', 'hsv',
-            'lab', 'luv', 'xyz', 'ycrcb'.
+        'lab', 'luv', 'xyz', 'ycrcb'.
 
     :returns: String of binary image data
     """
