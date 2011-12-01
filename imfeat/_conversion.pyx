@@ -78,24 +78,22 @@ def convert_image(image, mode_or_modes, image_mode=None):
     numpy: 'bgr'
     pil: 'rgb'
 
-    Args:
-        image: A PIL image or an OpenCV BGR/Gray image (8 bits per channel)
-        mode_or_modes: List of image modes or a single image mode.  A mode is
-            a dict {'type': type, 'dtype': dtype, 'mode': mode}
-            type: Valid options are 'opencv', 'numpy', 'pil'
-            dtype: Valid options are 'uint8', 'float32'
-            mode: Valid options are 'gray', 'rgb', 'bgr', 'hls', 'hsv',
-                'lab', 'luv', 'xyz', 'ycrcb'
-        image_mode: Mode corresponding to the input image, if None then
-            the depth and type will be detected from the input and the depth
-            will be assumed to be the default color for the type (see above).
-            This is useful if you want to override the default color.
 
-    Returns:
-        Valid image
+    :param image: A PIL image or an OpenCV BGR/Gray image (8 bits per channel)
+    :param mode_or_modes: List of image modes or a single image mode.  A mode is
+        a dict {'type': type, 'dtype': dtype, 'mode': mode}
+        type: Valid options are 'opencv', 'numpy', 'pil'
+        dtype: Valid options are 'uint8', 'float32'
+        mode: Valid options are 'gray', 'rgb', 'bgr', 'hls', 'hsv',
+            'lab', 'luv', 'xyz', 'ycrcb'
+    :param image_mode: Mode corresponding to the input image, if None then
+        the depth and type will be detected from the input and the depth
+        will be assumed to be the default color for the type (see above).
+        This is useful if you want to override the default color.
 
-    Raises:
-        ValueError: There was a problem converting.
+
+    :returns: Valid image
+    :raises: ValueError: There was a problem converting.
     """
     if isinstance(mode_or_modes, dict):
         modes = [mode_or_modes]
@@ -158,17 +156,15 @@ def convert_image(image, mode_or_modes, image_mode=None):
 def resize_image(image, height, width=None, image_mode=None):
     """Resize image to a specified size, crop excess
 
-    Args:
-        image: Input image
-        height: Desired image height
-        width: Desired image width
-        image_mode: Mode corresponding to the input image, if None then
-            the depth and type will be detected from the input and the depth
-            will be assumed to be the default color for the type (see above).
-            This is useful if you want to override the default color.
+    :param image: Input image
+    :param height: Desired image height
+    :param width: Desired image width
+    :param image_mode: Mode corresponding to the input image, if None then
+        the depth and type will be detected from the input and the depth
+        will be assumed to be the default color for the type (see above).
+        This is useful if you want to override the default color.
 
-    Returns:
-        Resized image in the original image format
+    :returns: Resized image in the original image format
     """
     if width is None:
         width = height
@@ -197,18 +193,16 @@ def resize_image(image, height, width=None, image_mode=None):
 def image_fromstring(image_data, mode_or_modes=None):
     """Convert an image from a string (using PIL's image IO)
 
-    Args:
-        image_data: Binary image data
-        mode_or_modes: List of image modes or a single image mode.  A mode is
-            a dict {'type': type, 'dtype': dtype, 'mode': mode}. If None
-            (default) then any output type is acceptable (most natural is used).
-            type: Valid options are 'opencv', 'numpy', 'pil'
-            dtype: Valid options are 'uint8', 'float32'
-            mode: Valid options are 'gray', 'rgb', 'bgr', 'hls', 'hsv',
-                'lab', 'luv', 'xyz', 'ycrcb'.
+    :param: image_data: Binary image data
+    :param: mode_or_modes: List of image modes or a single image mode.  A mode is
+        a dict {'type': type, 'dtype': dtype, 'mode': mode}. If None
+        (default) then any output type is acceptable (most natural is used).
+        type: Valid options are 'opencv', 'numpy', 'pil'
+        dtype: Valid options are 'uint8', 'float32'
+        mode: Valid options are 'gray', 'rgb', 'bgr', 'hls', 'hsv',
+            'lab', 'luv', 'xyz', 'ycrcb'.
 
-    Returns:
-        String of binary image data
+    :returns: String of binary image data
     """
     if mode_or_modes is None:
         mode_or_modes = {'type': 'pil', 'dtype': 'uint8', 'mode': 'rgb'}
@@ -218,16 +212,14 @@ def image_fromstring(image_data, mode_or_modes=None):
 def image_tostring(image, format, image_mode=None):
     """Convert image to a string (using PIL's image IO)
 
-    Args:
-        image: Input image
-        format: PIL image format to convert to (e.g., 'JPEG', 'PNG')
-        image_mode: Mode corresponding to the input image, if None then
-            the depth and type will be detected from the input and the depth
-            will be assumed to be the default color for the type (see above).
-            This is useful if you want to override the default color.
+    :param: image: Input image
+    :param format: PIL image format to convert to (e.g., 'JPEG', 'PNG')
+    :param image_mode: Mode corresponding to the input image, if None then
+        the depth and type will be detected from the input and the depth
+        will be assumed to be the default color for the type (see above).
+        This is useful if you want to override the default color.
 
-    Returns:
-        String of binary image data
+    :returns: String of binary image data
     """
     if image_to_mode(image)['mode'] == 'gray':
         image = convert_image(image, {'type': 'pil', 'dtype': 'uint8', 'mode': 'gray'}, image_mode=image_mode)
