@@ -21,13 +21,6 @@ __license__ = 'GPL V3'
 
 import numpy as np
 import scipy as sp
-try:
-    import scipy.cluster
-except RuntimeError:
-    import os
-    import tempfile
-    os.environ['HOME'] = tempfile.gettempdir()
-    import scipy.cluster
 import cv
 import numpy as np
 cimport numpy as np
@@ -55,6 +48,13 @@ cdef class BoVW(imfeat.BaseFeature):
 
     @classmethod
     def cluster(cls, images, feature_point_func, num_clusters):
+        try:
+            import scipy.cluster
+        except RuntimeError:  # NOTE(brandyn): Fixes problems where the home directory is not specified
+            import os
+            import tempfile
+            os.environ['HOME'] = tempfile.gettempdir()
+            import scipy.cluster
         points = np.vstack([feature_point_func(image) for image in images])
         return sp.cluster.vq.kmeans(points, num_clusters)[0]
 
