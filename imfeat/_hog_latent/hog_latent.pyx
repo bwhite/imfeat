@@ -3,7 +3,6 @@ import cv
 import numpy as np
 cimport numpy as np
 cimport imfeat
-import distpy
 import imfeat
 
 cdef extern from "features.hpp":
@@ -15,14 +14,13 @@ cdef extern from "features.hpp":
 cdef class HOGLatent(imfeat.BaseFeature):
     cdef public object MODES
     cdef int _sbin
-    cdef object dist, _blocks
+    cdef object _blocks
 
     def __init__(self, sbin=2, blocks=1):
         super(HOGLatent, self).__init__()
         self.MODES = [{'type': 'numpy', 'dtype': 'uint8', 'mode': 'rgb'}]
         self._sbin = sbin
         self._blocks = blocks
-        self.dist = distpy.L2Sqr()
 
     cpdef make_feature_mask(self, image_input):
         cdef np.ndarray image = np.ascontiguousarray(image_input, dtype=np.float64)
@@ -88,6 +86,8 @@ cdef class HOGLatent(imfeat.BaseFeature):
             blocks = self._blocks
         sbin = int(sbin)
         blocks = int(blocks)
+        import distpy
+        dist = distpy.L2Sqr()
         cdef np.ndarray image = np.ascontiguousarray(imfeat.convert_image(image_input, [{'type': 'numpy', 'mode': 'rgb', 'dtype': 'uint8'}]),
                                                      dtype=np.float64)
         cdef np.ndarray feat_shape = np.zeros(3, dtype=np.int32)
@@ -99,7 +99,7 @@ cdef class HOGLatent(imfeat.BaseFeature):
         out = self._make_blocks(out, blocks)
         bow_shape = out.shape[0], out.shape[1]
         out = out.reshape((out.shape[0] * out.shape[1], out.shape[2]))
-        return np.ascontiguousarray(self.dist.nns(clusters, np.asfarray(out))[:, 1]).reshape(bow_shape)
+        return np.ascontiguousarray(dist.nns(clusters, np.asfarray(out))[:, 1]).reshape(bow_shape)
 
     cdef _make_blocks(self, np.ndarray out, blocks):
         """Convert a grid of raw hog features into overlapping blocks"""
