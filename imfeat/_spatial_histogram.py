@@ -13,4 +13,4 @@ class SpatialHistogram(imfeat.Histogram):
         output_size = step_delta = (image_cv.height / self._num_rows, image_cv.width / self._num_cols)
         bgen = imfeat.BlockGenerator(image_cv, imfeat.CoordGeneratorRect,
                                      output_size=output_size, step_delta=step_delta)
-        return [np.hstack([super(SpatialHistogram, self).make_features(image)[0] for image, _ in bgen])]
+        return [np.hstack([imfeat.compute(super(SpatialHistogram, self), image)[0] for image, _ in bgen])]

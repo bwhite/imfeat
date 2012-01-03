@@ -3,7 +3,7 @@ try:
 except ImportError:
     import unittest
 import numpy as np
-import cv
+import cv2
 import os
 import imfeat
 
@@ -26,7 +26,7 @@ class Test(unittest.TestCase):
             np.testing.assert_equal(x, y)
 
     def test_block_gen(self):
-        img = cv.LoadImage('test_images/lena.jpg')
+        img = cv2.imread('test_images/lena.jpg')
         bgen = imfeat.BlockGenerator(img, imfeat.CoordGeneratorRect,
                                      output_size=(200, 200), step_delta=(200, 200))
         try:
@@ -34,10 +34,10 @@ class Test(unittest.TestCase):
         except OSError:
             pass
         for num, (x, y) in enumerate(bgen):
-            cv.SaveImage('out/%.8d.jpg' % num, x)
+            cv2.imwrite('out/%.8d.jpg' % num, x)
 
     def test_block_gen_rot(self):
-        img = cv.LoadImage('test_images/lena.jpg')
+        img = cv2.imread('test_images/lena.jpg')
         bgen = imfeat.BlockGenerator(img, imfeat.CoordGeneratorRectRotate,
                                      output_size=(200, 200), step_delta=(200, 200), angle_steps=8)
         try:
@@ -45,7 +45,7 @@ class Test(unittest.TestCase):
         except OSError:
             pass
         for num, (x, y) in enumerate(bgen):
-            cv.SaveImage('out_rot/%.8d.jpg' % num, x)
+            cv2.imwrite('out_rot/%.8d.jpg' % num, x)
 
 
 if __name__ == '__main__':

@@ -59,6 +59,7 @@ cdef class CoordGeneratorBase(object):
         elif self._mode == 'euclidean_pil':
             # (left, upper, right, lower) pixel coords compatible with
             # PIL's Image.crop.  x is [left, right) and y is [upper, lower)
+            tly, tlx, height, width, angle, scale = v
             assert angle == 0. and scale == 1.
             upper, left = v[:2] - v[2:4] / 2
             lower, right = v[:2] + v[2:4] / 2
@@ -153,12 +154,12 @@ cdef class BlockGenerator(object):
     cdef object _coord_gen
 
     def __init__(self, image, coord_gen_cls, *args, **kw):
-        image = imfeat.convert_image(image, [('opencv', 'bgr', 8), ('opencv', 'gray', 8),
-                                             ('opencv', 'bgr', 32), ('opencv', 'gray', 32)])
-        assert(isinstance(image, cv.iplimage))
+        image = imfeat.convert_image(image, [{'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'},
+                                             {'type': 'numpy', 'dtype': 'float32', 'mode': 'bgr'},
+                                             {'type': 'numpy', 'dtype': 'uint8', 'mode': 'gray'},
+                                             {'type': 'numpy', 'dtype': 'float32', 'mode': 'gray'}])
         self._image = image
-        self._coord_gen = coord_gen_cls(image_size=(image.height, image.width), *args, **kw)
-        self._image_out = cv.CreateImage((image.width, image.height), image.depth, image.channels)
+        self._coord_gen = coord_gen_cls(image_size=(image.shape[0], image.shape[1]), *args, **kw)
 
     def __iter__(self):
         return self
@@ -167,17 +168,15 @@ cdef class BlockGenerator(object):
         while 1:
             sim = self._coord_gen.next()
             width_height, trans = self._coord_gen.format_output(sim, 'similarity_cv2')
-            if (self._image_out.width, self._image_out.height) != width_height:
-                self._image_out = cv.CreateImage(width_height, self._image.depth, self._image.channels)
             # See if coords are in bounds
             bounds = np.asfarray([[[0, 0, 1],
-                                   [self._image_out.width, 0, 1],
-                                   [0, self._image_out.height, 1],
-                                   [self._image_out.width, self._image_out.height, 1]]])
+                                   [width_height[0], 0, 1],
+                                   [0, width_height[1], 1],
+                                   [width_height[0], width_height[1], 1]]])
             trans_inv = np.resize(trans, (3, 3))
             trans_inv[2, :] = np.array([0, 0, 1])
             bounds_trans = cv2.transform(bounds, np.linalg.inv(trans_inv))
-            if np.any(bounds_trans < 0) or np.any(bounds_trans[0, :, 0] > self._image.width) or np.any(bounds_trans[0, :, 1] > self._image.height):
+            if np.any(bounds_trans < 0) or np.any(bounds_trans[0, :, 0] > self._image.shape[1]) or np.any(bounds_trans[0, :, 1] > self._image.shape[0]):
                 continue
-            cv.WarpAffine(self._image, self._image_out, trans)
-            return self._image_out, sim
+            image_out = cv2.warpAffine(self._image, trans, width_height)
+            return image_out, sim
