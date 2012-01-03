@@ -18,7 +18,7 @@ import filter_bank
 from _faces.faces import Faces
 from _spatial_histogram import SpatialHistogram
 from _meta import MetaFeature
-from _object_bank.object_bank import ObjectBank
+#from _object_bank.object_bank import ObjectBank  # NOTE(brandyn): Removed until we can clean up deps
 try:  # Try to import these packages to aid pyinstaller
     import numpy as _np
     import cv as _cv
