@@ -79,6 +79,10 @@ ext_modules = [Extension("_imfeat",
                                              '-D', 'STANDALONE_GIST'],
                          extra_link_args=['-l', 'fftw3f'])]
 
+for e in ext_modules:
+    e.pyrex_directives = {"embedsignature": True}
+
+
 setup(name='imfeat',
       cmdclass=cmdclass,
       version='.01',
