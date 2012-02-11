@@ -16,7 +16,7 @@ cdef class HOGLatent(imfeat.BaseFeature):
     cdef int _sbin
     cdef object _blocks
 
-    def __init__(self, sbin=2, blocks=2):
+    def __init__(self, sbin=2, blocks=1):
         super(HOGLatent, self).__init__()
         self.MODES = [{'type': 'numpy', 'dtype': 'uint8', 'mode': 'rgb'}]
         self._sbin = sbin
