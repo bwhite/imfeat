@@ -15,8 +15,17 @@ class ObjectBank(imfeat.BaseFeature):
     def __init__(self):
         super(ObjectBank, self).__init__()
         self.MODES = [('opencv', 'bgr', 8)]
-        self._temp_dir_in = tempfile.mkdtemp()
-        self._temp_dir_out = tempfile.mkdtemp()
+        self._temp_root = tempfile.mkdtemp()
+        self._temp_dir_in = self._temp_root + '/in'
+        self._temp_dir_out = self._temp_root + '/out'
+        try:
+            os.makedirs(self._temp_dir_in)
+        except OSError:
+            pass
+        try:
+            os.makedirs(self._temp_dir_out)
+        except OSError:
+            pass
         self.model_path = '%s/models' % self._temp_dir_out
         if os.path.exists('OBmain'):  # Use curdir
             self.path = os.path.abspath('.')
@@ -28,7 +37,8 @@ class ObjectBank(imfeat.BaseFeature):
             open(self.model_path, 'w').write('\n'.join(glob.glob('*.text')) + '\n')
         else:
             self.path = __path__[0]
-            self.ob_path = 'data/OBmain'
+            shutil.copy(os.path.join(self.path, 'data/OBmain'), self._temp_root)
+            self.ob_path = os.path.join(self._temp_root, 'OBmain')
             try:
                 os.chmod(self.ob_path, stat.S_IXUSR | stat.S_IRUSR)
             except OSError:
@@ -40,8 +50,7 @@ class ObjectBank(imfeat.BaseFeature):
         self.feat_path = os.path.join(self._temp_dir_out, '00000.jpg.feat')
 
     def __del__(self):
-        shutil.rmtree(self._temp_dir_in)
-        shutil.rmtree(self._temp_dir_out)
+        shutil.rmtree(self._temp_root)
 
     def make_features(self, image):
         cv.SaveImage(self.image_path, image)

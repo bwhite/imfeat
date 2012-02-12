@@ -136,7 +136,7 @@ class TestFeatures(unittest.TestCase):
         print('Hog Latent')
         image = cv2.imread('test_images/lena.ppm')
         out = imfeat.compute(feature, image)[0]
-        self.assertEqual(len(out), 254 * 254 * 32)
+        self.assertEqual(len(out), 254 * 254 * 31)
         load_from_umiacs('fixtures/lena_feat.pkl.gz', 'ab4580a8322e18b144c39867aeefa05b')
         with gzip.GzipFile('fixtures/lena_feat.pkl.gz') as fp:
             f = pickle.load(fp)
@@ -169,12 +169,26 @@ class TestFeatures(unittest.TestCase):
         print(f1)
         print(f1.shape)
 
+    def test_tiny_image(self):
+        feature = imfeat.TinyImage()
+        im0 = cv.LoadImage('test_images/00000.jpg')
+        im1 = cv.LoadImage('test_images/lena.jpg')
+        f0 = feature(im0)
+        print((im0.height, im0.width))
+        print(f0)
+        print(f0.shape)
+        f1 = feature(im1)
+        print((im1.height, im1.width))
+        print(f1)
+        print(f1.shape)
+
     def test_ainterface(self):
         """Simple test of the basic feature interface"""
         features = [imfeat.ObjectBank(), imfeat.GIST(), imfeat.HOGLatent(2),
                     imfeat.Autocorrelogram(), imfeat.GradientHistogram(), imfeat.Histogram('gray'),
                     imfeat.RHOG(gray=False), imfeat.RHOG(gray=True), imfeat.Moments('rgb', 2),
-                    imfeat.Histogram('rgb'), imfeat.SpatialHistogram(mode='rgb', num_rows=2, num_cols=2)]
+                    imfeat.Histogram('rgb'), imfeat.SpatialHistogram(mode='rgb', num_rows=2, num_cols=2),
+                    imfeat.TinyImage()]
         feat_sz = {}
         for image_fn in glob.glob('test_images/*'):
             if image_fn in ['test_images/test3.gif']:
