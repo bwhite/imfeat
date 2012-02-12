@@ -3,6 +3,7 @@ from _imfeat import BaseFeature
 from _imfeat_conversion import convert_image, resize_image, image_tostring, image_fromstring
 import dummy
 import rand
+from _tiny_image import TinyImage
 from _gradient_hist import GradientHistogram
 from _imfeat_autocorrelogram import Autocorrelogram
 from _imfeat_histogram import Histogram
@@ -18,7 +19,7 @@ import filter_bank
 from _faces.faces import Faces
 from _spatial_histogram import SpatialHistogram
 from _meta import MetaFeature
-#from _object_bank.object_bank import ObjectBank  # NOTE(brandyn): Removed until we can clean up deps
+from _object_bank.object_bank import ObjectBank
 try:  # Try to import these packages to aid pyinstaller
     import numpy as _np
     import cv as _cv

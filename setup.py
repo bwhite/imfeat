@@ -88,10 +88,6 @@ setup(name='imfeat',
       version='.01',
       packages=['imfeat', 'imfeat._rhog_dalal',
                 'imfeat._faces'],
-      package_data={'imfeat._faces': ['data/*']},
+      package_data={'imfeat._faces': ['data/*'],
+                    'imfeat._object_bank': ['data/OBmain', 'data/models/*']},
       ext_modules=ext_modules)
-
-# NOTE(brandyn): Commented out object bank because it brings in too many files, fix this later
-#,'imfeat._object_bank'
-#      package_data={'imfeat._faces': ['data/*'],
-#'imfeat._object_bank': ['data/OBmain', 'data/models/*']},
