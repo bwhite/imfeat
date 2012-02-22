@@ -14,12 +14,13 @@ from _imfeat_gist import GIST
 from _imfeat_lbp import LBP
 from _imfeat_block_generator import CoordGeneratorBase, CoordGeneratorRect, BlockGenerator, CoordGeneratorRectRotate
 #from _rhog_dalal import rhog as rhog_dalal
-from _imfeat_bovw import BoVW
+from _imfeat_bovw import BoVW, spatial_pyramid
 import filter_bank
 from _faces.faces import Faces
 from _spatial_histogram import SpatialHistogram
 from _meta import MetaFeature
 from _object_bank.object_bank import ObjectBank
+from _texton.texton import TextonHistogram, TextonSpatialHistogram, TextonImage
 try:  # Try to import these packages to aid pyinstaller
     import numpy as _np
     import cv as _cv

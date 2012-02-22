@@ -87,7 +87,7 @@ setup(name='imfeat',
       cmdclass=cmdclass,
       version='.01',
       packages=['imfeat', 'imfeat._rhog_dalal',
-                'imfeat._faces', 'imfeat._object_bank'],
+                'imfeat._faces', 'imfeat._object_bank', 'imfeat._texton'],
       package_data={'imfeat._faces': ['data/*'],
                     'imfeat._object_bank': ['data/OBmain', 'data/models/*']},
       ext_modules=ext_modules)

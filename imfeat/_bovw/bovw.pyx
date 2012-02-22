@@ -31,6 +31,25 @@ cdef extern from "bovw_aux.h":
     void bovw_fast_hist(np.int32_t *neighbor_map, np.int32_t *bovw, int height, int width, int bins, int level)
     void bovw_fast_sum(np.int32_t *bovw_fine, np.int32_t *bovw_coarse, int height_fine, int width_fine, int bins)
 
+cpdef spatial_pyramid(np.ndarray[np.int32_t, ndim=2, mode='c'] label_image, int levels, int max_values):
+    assert 0 < levels
+    cdef np.ndarray shist = np.zeros((2 ** (levels - 1), 2 ** (levels - 1), max_values), dtype=np.int32)
+    cdef np.ndarray[np.int32_t, ndim=3, mode='c'] shist_coarse
+    assert np.max(label_image) < max_values
+    assert 0 <= np.min(label_image)
+    bovw_fast_hist(<np.int32_t *>label_image.data, <np.int32_t *>shist.data,
+                   label_image.shape[0], label_image.shape[1], max_values, levels - 1)
+    out = [shist]
+    for x in range(levels - 1):
+        shist_coarse = np.zeros((shist.shape[0] / 2, shist.shape[1] / 2, shist.shape[2]), dtype=np.int32)
+        assert shist_coarse.shape[2] == shist.shape[2]
+        bovw_fast_sum(<np.int32_t *>shist.data, <np.int32_t *>shist_coarse.data, shist.shape[0], shist.shape[1], shist.shape[2])
+        shist = shist_coarse
+        out.append(shist)
+    # Normalize and scale the bins
+    return np.hstack([(y.ravel() / float(np.sum(y))) * 2 ** x for x, y in enumerate(out[::-1])])
+
+
 cdef class BoVW(imfeat.BaseFeature):
     cdef object feature_point_func, dist, normalize
     cdef int levels
@@ -59,21 +78,5 @@ cdef class BoVW(imfeat.BaseFeature):
         return sp.cluster.vq.kmeans(points, num_clusters)[0]
 
     def make_features(self, image):
-        cdef np.ndarray bovw = np.zeros((2 ** (self.levels - 1), 2 ** (self.levels - 1), self.max_values), dtype=np.int32)
-        cdef np.ndarray bovw_coarse
         cdef np.ndarray neighbor_map = np.ascontiguousarray(self.feature_point_func(image), dtype=np.int32)
-        assert np.max(neighbor_map) < self.max_values
-        assert 0 <= np.min(neighbor_map)
-        bovw_fast_hist(<np.int32_t *>neighbor_map.data, <np.int32_t *>bovw.data,
-                       neighbor_map.shape[0], neighbor_map.shape[1], self.max_values, self.levels - 1)
-        # Build the output array
-        out = [bovw]
-        for x in range(self.levels - 1):
-            bovw_coarse = np.zeros((bovw.shape[0] / 2, bovw.shape[1] / 2, bovw.shape[2]))
-            assert bovw_coarse.shape[2] == bovw.shape[2]
-            bovw_fast_sum(<np.int32_t *>bovw.data, <np.int32_t *>bovw_coarse.data, bovw.shape[0], bovw.shape[1], bovw.shape[2])
-            bovw = bovw_coarse
-            out.append(bovw)
-        # Normalize and scale the bins
-        out = [(y.ravel() / float(np.sum(y))) * 2 ** x for x, y in enumerate(out[::-1])]
-        return [np.hstack(out)]
+        return [spatial_pyramid(neighbor_map, self.levels, self.max_values)]
