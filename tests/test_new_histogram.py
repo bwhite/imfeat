@@ -11,17 +11,20 @@ import unittest
 #            'xyz': cv.CV_BGR2XYZ,
 #            'ycrcb': cv.CV_BGR2YCrCb}[mode]
 import random
+import numpy as np
 modes = ['rgb', 'bgr', 'hls', 'hsv', 'lab', 'luv', 'xyz', 'ycrcb']
 
 class Test(unittest.TestCase):
 
-    def _test_hist(self):
+    def test_hist(self):
         img = cv.LoadImage('test_images/lena.jpg')
-        feat = imfeat.Histogram('rgb', [0, 0, 0], [1, 1, 1], [8, 8, 8])
-        a = imfeat.compute(imfeat.histogram_joint, img)[0]
-        b = imfeat.compute(feat, img)[0]
-        a = a.reshape(8, 8, 8).T.ravel()
-        self.assertEqual(a.tolist(), b.tolist())
+        feat = imfeat.Histogram('rgb', num_bins=8)
+        feat2 = imfeat.PyramidHistogram(mode='rgb', num_bins=8, levels=1)
+        np.testing.assert_equal(feat(img), feat2(img))
+        out = imfeat.PyramidHistogram(mode='lab', num_bins=[4, 11, 11], levels=4)(img)
+        print(out)
+        print(out.shape)
+        
 
     def test_hist_planar(self):
         img = cv.LoadImage('test_images/lena.jpg')

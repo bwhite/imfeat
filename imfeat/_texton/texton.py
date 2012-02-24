@@ -49,23 +49,26 @@ class TextonBase(imfeat.BaseFeature):
 
 class TextonSpatialHistogram(TextonBase):
 
-    def __init__(self, levels=1):
+    def __init__(self, levels=1, other_class_thresh=None, norm=True):
         super(TextonSpatialHistogram, self).__init__()
         self.levels = levels
+        self.other_class_thresh = other_class_thresh
+        self.norm = norm
 
     def __call__(self, image):
         import time
         st = time.time()
         max_classes1, max_probs1, leaves1, max_classes2, max_probs2, all_probs2 = self._predict(image)
-        out = imfeat.spatial_pyramid(max_classes2, self.levels, self.num_classes)
+        num_classes = self.num_classes
+        if self.other_class_thresh is not None:
+            max_classes2[max_probs2 < self.other_class_thresh] = self.num_classes
+            num_classes += 1
+        out = imfeat.spatial_pyramid(max_classes2, self.levels, num_classes)
+        out = np.asfarray(out)
+        if self.norm:
+            out /= np.sum(out)
         print(time.time() - st)
         return out
-        #ch = int(np.ceil(max_classes2.shape[0] / float(self.size)))
-        #cw = int(np.ceil(max_classes2.shape[1] / float(self.size)))
-        # NOTE(brandyn): The last row/column may have fewer pixels but we normalize, all data is used
-        #out = np.hstack([self._hist(max_classes2[x:(x+ch), y:(y+cw)])
-        #                 for y in range(0, max_classes2.shape[1], cw)
-        #                 for x in range(0, max_classes2.shape[0], ch)])
 
 
 class TextonHistogram(TextonSpatialHistogram):

@@ -79,4 +79,4 @@ cdef class BoVW(imfeat.BaseFeature):
 
     def make_features(self, image):
         cdef np.ndarray neighbor_map = np.ascontiguousarray(self.feature_point_func(image), dtype=np.int32)
-        return [spatial_pyramid(neighbor_map, self.levels, self.max_values)]
+        return [np.asfarray(spatial_pyramid(neighbor_map, self.levels, self.max_values))]
