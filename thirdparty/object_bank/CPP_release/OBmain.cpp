@@ -21,12 +21,13 @@ int getdir (string dir, vector<string> &files)
         return errno;
     }
 
-    while ((dirp = readdir(dp)) != NULL)
+    while ((dirp = readdir(dp)) != NULL) {
+        // NOTE(brandyn): This fixes the bug in the original code where . and .. may not be first
+        if (strcmp(dirp->d_name, ".") == 0 || strcmp(dirp->d_name, "..") == 0)
+            continue;
         files.push_back(string(dirp->d_name));
+    }
     closedir(dp);
-
-    /* Remove the first two entries in the vector*/
-    files.erase(files.begin(),files.begin()+2);
 
     return 0;
 }

@@ -1,0 +1,1 @@
+The OBmain.cpp was changed to fix a directory reading bug where . and .. aren't necessarily the first entries. (see diff)
