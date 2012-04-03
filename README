@@ -9,4 +9,4 @@ cython
 
 Third Party Resources
 Object Bank: http://vision.stanford.edu/projects/objectbank/
-A binary is included temporarily until it is fully integrated in the build script.  You may need to overwrite it with your own binary if you have a different OS or glibc.
+A binary is included temporarily until it is fully integrated in the build script.  You may need to overwrite it with your own binary if you have a different OS or glibc.  See the thirdparty directory for patched source to fix a few issues.
