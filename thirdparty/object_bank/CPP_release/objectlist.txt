@@ -1,0 +1,178 @@
+Object Names:
+10200-clock
+10302-goggles
+10306-spectacles
+10477-knife
+10572-key
+10577-keyboard
+10638-desktop computer
+10658-computer
+1074-dog
+10790-printer
+10887-faucet
+10914-switch
+1103-cow
+11050-wheel
+11057-propeller
+11084-Ferris wheel
+11086-roller coaster
+11110-swing
+11300-mirror
+11337-buckle
+11340-button
+11344-hook
+11515-candle
+11541-streetlight
+11555-room light
+11564-light
+11696-saddle
+11700-bookshelf
+11704-shelf
+1172-umbrella
+11736-plate
+1176-soccer ball
+1190-laptop
+1232-airplane
+12438-coral
+12498-snail
+1253-balloon
+12534-clam
+1256-aircraft
+12612-microwave
+12634-dishwasher
+12638-electric refrigerator
+12706-pot
+12887-aquarium
+12982-car
+13022-gallery
+13041-kitchen
+13095-public toilet
+13113-cupboard
+13114-drawer
+13153-bridge
+1329-boat
+13320-garage
+13394-skyscraper
+13420-building
+13469-cross
+1354-sailboat
+13793-fence
+13818-door
+13838-railing
+13888-wall
+13935-sail
+13968-pup tent
+14042-rack
+14081-window
+14126-tower
+1442-ship
+14530-shower curtain
+159-homo
+15928-rock
+1634-car
+16353-newspaper
+1643-motorcycle
+16629-pool ball
+1666-truck
+1744-bed
+1754-cabinet
+1768-lamp
+1784-bench
+18142-bag
+1823-chair
+1834-sofa
+1843-toilet seat
+187-cat
+1874-writing desk
+1875-desk
+1876-dressing table
+18802-gravel
+1888-pool table
+18907-attire
+1891-table-tennis table
+1898-table
+19406-shield
+20056-backboard
+20342-train
+20965-helmet
+21539-basketball court
+21785-bride
+22319-radio
+2232-fruit
+22605-face veil
+2276-drum
+22907-people
+2315-guitar
+2329-French horn
+24627-mug
+25482-cloud
+27921-suit
+28137-shoe
+30792-baseball
+31831-basket
+32025-blind
+32068-floor
+3283-flower
+37636-bottle
+38-bear
+3824-grass
+39102-bouquet
+40046-bus stop
+42817-groom
+45566-blanket
+45802-television
+48078-bridal gown
+48328-vase
+49895-pen
+50468-bathtub
+51125-rug
+52218-curtain
+53184-camera
+53441-baseball glove
+53456-ball
+54612-towel
+553-mouse
+56923-stick
+5703-tree
+574-male horse
+57816-squash racket
+61595-ocean
+62095-sky
+63194-box
+63354-baggage
+66479-television
+67467-glove
+67636-telephone
+6882-beach
+6986-mountain
+69930-jersey
+7022-seashore
+70374-boot
+70901-animal
+717-elephant
+7198-fork
+72925-bus
+73445-flipper
+74356-soil
+74634-hat
+74974-cesspool
+767-horse
+8036-duck
+8274-bird
+865-rabbit
+8923-turtle
+9176-snake
+9328-wing
+9370-aqualung
+9371-oxygen mask
+940-lion
+9588-cell
+9693-loudspeaker
+9700-microphone
+9726-computer monitor
+9730-computer screen
+9749-mouse
+9864-filter
+9887-stove
+994-monkey
+56253-basketball

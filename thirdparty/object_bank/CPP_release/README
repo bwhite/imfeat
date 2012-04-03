@@ -1,0 +1,62 @@
+OBJECT BANK RELEASE 1.0 (beta)
+
+The code is tested on gcc version 4.1.2 and Linux distribution version CentOS release 5.5 (Final)
+
+TO BUILD: 
+type 'make clean; make'
+
+REQUIREMENTS:
+Libjpeg for loading images
+
+QUICK TEST:
+./OBMain ./inputs/ ./outputs/
+This will run a test on a sample image from UIUC Sports dataset.
+
+INSTRUCTIONS FOR RUNNING DIRECTLY:
+
+./OBMain [-M file] [-R 0/1] [-F 0/1] [-L:#] inputdirectory/ outputdirectory/
+
+-M: If you pass in a file that contains the model names, the code will only run that subset
+-R: Indicate if you want to save the responsemaps (default: NO)
+-F: Indiate if you want to save the features (default: YES)
+-L: Indicate how many scale levels you want to descend into the image (default: 6)
+Note: Be sure to leave the trailing '/' for the directories.
+
+INSTRUCTIONS FOR RUNNING WITH SCRIPTS:
+The two scripts included are RunDir.sh and ClusterExample.sh
+
+The usage here for RunDir is:
+./Rundir.sh [input directory that contains multiple folders of images] [base directory for outputs]
+Example:
+./RunDir.sh ../UIUC_SPORTS/ outputs/
+
+So this would sequentially call the following
+./OBmain ../UIUC_SPORTS/badminton/ outputs/badminton/
+./OBmain ../UIUC_SPORTS/rowing/ outputs/rowing/
+./OBmain ../UIUC_SPORTS/badminton/croquet outputs/croquet/
+...etc.
+
+For parallelization, we included ClusterExample.sh. The usage is:
+ ./ClusterExample.sh dirlist ../UIUC_Sports/ outputs/ 1
+
+The first input is a file containing all the folder names inside the input directory 
+	(in the above example ../Indoor_images/)
+The second input in the base directory for the inputs
+The third inputs in the base directory for the outputs
+The fourth input is the index for exactly which entry in of the dirlist you want to access.
+	NOTE: This is a 0-indexed script! 
+
+For example, the above example would call:
+./OBmain ../UIUC_SPORTS/badminton/ outputs/badminton/
+
+POST PROCESSING:
+If you have a directory of categorized outputs that you would like to format for testing, we provide 
+two MATLAB scripts for your convenience. Please refer to CreateFeatureVector.m 
+For example
+
+CREATING .TEXT MODEL FILES:
+If you have additional LSVM models that you would like to include, you need can convert them to ASCII 
+using the ModelMat2Txt.m. Copy the resulting text model into the models/ directory and it will be 
+included in the next execution of OBmain
+
+feature extraction using this version of code takes around 10 seconds per image.
