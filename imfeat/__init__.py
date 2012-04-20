@@ -2,7 +2,7 @@ from main import compute
 from _imfeat import BaseFeature
 from _imfeat_conversion import convert_image, resize_image, image_tostring, image_fromstring
 import dummy
-import rand
+from _rand import Random
 from _tiny_image import TinyImage
 from _gradient_hist import GradientHistogram
 from _imfeat_autocorrelogram import Autocorrelogram
