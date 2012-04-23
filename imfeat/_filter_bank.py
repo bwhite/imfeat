@@ -22,12 +22,25 @@ __license__ = 'GPL V3'
 
 import numpy as np
 import warnings
+import imfeat
 
 MODES = ['L']
 _filters = None
 _caches = None
 _filter_func = None
 _params = None
+
+
+class FilterBank(imfeat.BaseFeature):
+
+    def __init__(self):
+        super(FilterBank, self).__init__({'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'})
+
+    def __call__(self, image, filter_func=None, params=None):
+        image = self.convert(image)
+        convs = _make_convs(image, filter_func, params)
+        convs = [x.ravel() for x in convs]
+        return np.array(convs).T
 
 
 def gabor_schmid(tau=2, sigma=1, radius=5):
@@ -108,7 +121,7 @@ def fftconvolve_cache(in1, in2, mode="full", cache1=None, cache2=None):
     recomputing fft.
 
     """
-    from scipy.signal import fftn, ifftn
+    from scipy.fftpack import fftn, ifftn
     s1 = np.array(in1.shape)
     s2 = np.array(in2.shape)
     complex_result = False
@@ -164,17 +177,11 @@ def _make_convs(image, filter_func=None, params=None):
             for filt_cache in zip(_filters, _caches)]
 
 
-def make_features(image, filter_func=None, params=None):
-    convs = _make_convs(image, filter_func, params)
-    convs = [x.ravel() for x in convs]
-    return np.array(convs).T
-
-
 def make_texton(image, dist, clusters, filter_func=None, params=None):
     """Generates a texton image.
 
     Args:
-        image: PIL Image
+        image: Numpy Image
         dist: Has a nn method
         clusters: A list-like object of real-valued list-like objects
         filter_func: Function that produces a filter given an entry in params
@@ -196,7 +203,6 @@ def make_texton(image, dist, clusters, filter_func=None, params=None):
 def _demo():
     import distpy
     import pickle
-    import Image
     import glob
     import os
     import matplotlib.pyplot as mp
@@ -211,7 +217,7 @@ def _demo():
         pass
     for image_fn in image_fns:
         clust = pickle.load(open(clust_fn))
-        image = Image.open(image_fn).convert('L')
+        image = cv2.imread(image_fn, 0)
         mp.clf()
         mp.imshow(make_texton(image, distpy.L2Sqr(), clust))
         mp.savefig(out_dir + os.path.basename(image_fn) + '.png')

@@ -26,6 +26,3 @@ cdef class LBP(imfeat.BaseFeature):
             print('MaxHist[%s]' % str(np.max(hist)))
             return np.array(np.argsort(hist, 2)[:, :, -num_best:], dtype=np.uint8)
         return out
-
-    cpdef make_features(self, image_in):
-        pass

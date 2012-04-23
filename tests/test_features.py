@@ -46,14 +46,13 @@ class TestFeatures(unittest.TestCase):
         for fn in self.image_names:
             img = Image.open(fn)
             self.assertAlmostEquals(np.sum(hf(img)), 1.)
-            h = imfeat.compute(hf, img)
-            self.assertTrue(len(h) == 1)
-            self.assertTrue(h[0].shape == (8*8*8,))
+            h = hf(img)
+            self.assertTrue(h.shape == (8*8*8,))
 
     def _run_all_images(self, feature):
         images = (Image.open(fn)
                   for fn in self.image_names)
-        return ((imfeat.compute(feature, image), image)
+        return ((feature(image), image)
                 for image in images)
 
     def _feat_hist_zero(self, feature):
@@ -135,7 +134,7 @@ class TestFeatures(unittest.TestCase):
             print(len(feat_out[0]))
         print('Hog Latent')
         image = cv2.imread('test_images/lena.ppm')
-        out = imfeat.compute(feature, image)[0]
+        out = feature(image)
         self.assertEqual(len(out), 254 * 254 * 31)
         load_from_umiacs('fixtures/lena_feat.pkl.gz', 'ab4580a8322e18b144c39867aeefa05b')
         with gzip.GzipFile('fixtures/lena_feat.pkl.gz') as fp:
@@ -149,7 +148,7 @@ class TestFeatures(unittest.TestCase):
             print(len(feat_out[0]))
         # Compare against known output
         image = Image.open('test_images/lena.ppm')
-        out = imfeat.compute(feature, image)[0]
+        out = feature(image)
         test_string = ' '.join(['%.4f' % x for x in out] + ['\n'])
         with open('fixtures/gist_lena_output.txt') as fp:
             true_string = fp.read()

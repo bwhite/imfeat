@@ -1,3 +1,0 @@
-Import('env')
-env.SharedLibrary('lib/rhog',['rhog.c'], LIBS=['m'])
-env.Program(['rhog.c', 'rhog_test.c'], LIBS=['m', 'opencv_highgui'])

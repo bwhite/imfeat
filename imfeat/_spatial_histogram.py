@@ -9,8 +9,10 @@ class SpatialHistogram(imfeat.Histogram):
         self._num_rows = int(num_rows)
         self._num_cols = int(num_cols)
 
-    def make_features(self, image_cv):
-        output_size = step_delta = (image_cv.height / self._num_rows, image_cv.width / self._num_cols)
-        bgen = imfeat.BlockGenerator(image_cv, imfeat.CoordGeneratorRect,
+    def __call__(self, image_np):
+        image_np = self.convert(image_np)
+        height, width = image_np.shape
+        output_size = step_delta = (height / self._num_rows, width / self._num_cols)
+        bgen = imfeat.BlockGenerator(image_np, imfeat.CoordGeneratorRect,
                                      output_size=output_size, step_delta=step_delta)
-        return [np.hstack([imfeat.compute(super(SpatialHistogram, self), image)[0] for image, _ in bgen])]
+        return np.hstack([super(SpatialHistogram, self)(image) for image, _ in bgen])

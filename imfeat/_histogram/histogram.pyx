@@ -21,8 +21,7 @@ cdef class Histogram(imfeat.BaseFeature):
     cdef object norm
 
     def __init__(self, mode, num_bins=8, style='joint', min_vals=None, max_vals=None, norm=True, verbose=False):
-        super(Histogram, self).__init__()
-        self.MODES = [('opencv', mode, 32)]
+        super(Histogram, self).__init__({'type': 'numpy', 'dtype': 'float32', 'mode': mode})
         self.verbose = verbose
         self.norm = norm
         try:
@@ -60,26 +59,28 @@ cdef class Histogram(imfeat.BaseFeature):
             raise ValueError('Style must be joint or planar!')
         self.style = style
 
-    cpdef make_features(self, image_cv):
-        cdef np.ndarray image = np.ascontiguousarray(cv.GetMat(image_cv), dtype=np.float32)
+    def __call__(self, image_np):
+        image_np = self.convert(image_np)
+        cdef np.ndarray image = self.convert(image_np)
         cdef np.ndarray out
         out = np.zeros(self.num_hist_bins, dtype=np.int32)
+        height, width = image_np.shape[:2]
         if self.verbose:
             print('Min[%s] Max[%s]' % (np.min(np.min(image, 0), 0), np.max(np.max(image, 0), 0)))
         if self.MODES[0][1] == 'gray':
-            histogram_gray(<float *>image.data, image_cv.height, image_cv.width, self.min_vals[0],
+            histogram_gray(<float *>image.data, height, width, self.min_vals[0],
                            self.bin_width[0], self.num_bins[0], <np.int32_t *>out.data)
         else:
             if self.style == 'joint':
-                histogram_joint_fast(<float *>image.data, image_cv.height, image_cv.width, <np.float32_t *>self.min_vals.data,
+                histogram_joint_fast(<float *>image.data, height, width, <np.float32_t *>self.min_vals.data,
                                      <np.float32_t *>self.bin_width.data, <np.int32_t *>self.num_bins.data, <np.int32_t *>out.data)
             elif self.style == 'planar':
-                histogram_fast(<float *>image.data, image_cv.height, image_cv.width, <np.float32_t *>self.min_vals.data,
+                histogram_fast(<float *>image.data, height, width, <np.float32_t *>self.min_vals.data,
                                <np.float32_t *>self.bin_width.data, <np.int32_t *>self.num_bins.data, <np.int32_t *>out.data)
             else:
                 raise ValueError('Style must be joint or planar!')
         if self.norm:
-            return [np.asfarray(out) / np.sum(out)]
+            return np.asfarray(out) / np.sum(out)
         else:
-            return [np.asfarray(out)]
+            return np.asfarray(out)
 

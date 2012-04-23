@@ -3,7 +3,6 @@ try:
 except ImportError:
     import unittest
 import imfeat
-import impoint
 import cv2
 
 # Cheat Sheet (method/test) <http://docs.python.org/library/unittest.html>
@@ -36,6 +35,10 @@ import cv2
 # assertItemsEqual(a, b)    sorted(a) == sorted(b) and works with unhashable objs
 # assertDictContainsSubset(a, b)      all the key/value pairs in a exist in b
 import numpy as np
+try:
+    import impoint
+except ImportError:
+    impoint = None
 class Test(unittest.TestCase):
 
     def setUp(self):
@@ -44,6 +47,7 @@ class Test(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @unittest.skipIf(impoint is None, 'Needs impoint')
     def test_name(self):
         image = cv2.imread('test_images/lena.jpg')
         b = impoint.SURF()

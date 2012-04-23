@@ -28,6 +28,7 @@ import imfeat
 import distpy
 
 class Test(unittest.TestCase):
+    @unittest.skip('Broken, need clusters')
     def test_0(self):
         with open('surf_clusters.pkl') as clusters_fp:
             clusters = pickle.load(clusters_fp)

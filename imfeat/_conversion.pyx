@@ -98,7 +98,7 @@ def convert_image(image, mode_or_modes, image_mode=None):
         modes = [mode_or_modes]
     else:
         modes = mode_or_modes
-    modes = [m if isinstance(m, dict) else get_new_mode(m) for m in modes]
+    assert isinstance(modes[0], dict)
     # Convenience conversions:  These are only supported on input so they can't match our target conversion
     if isinstance(image, cv.cvmat):
         image = cv.GetImage(image)
@@ -189,8 +189,36 @@ def resize_image(image, height, width=None, image_mode=None):
     return convert_image(image, image_mode, image_mode=temp_mode)
 
 
+def resize_image_max_side(image, max_side, image_mode=None):
+    """Resize image to a specified size
+
+    :param image: Input image
+    :param max_side: Maximium image side length
+    :param image_mode: Mode corresponding to the input image, if None then
+        the depth and type will be detected from the input and the depth
+        will be assumed to be the default color for the type (see above).
+        This is useful if you want to override the default color.
+
+    :returns: Resized image in the original image format
+    """
+    if image_mode is None:
+        image_mode = image_to_mode(image)
+    temp_mode = dict(image_mode)
+    temp_mode['type'] = 'numpy'
+    image = convert_image(image, temp_mode)
+    cur_height, cur_width = image.shape[:2]
+    if cur_height > cur_width:
+        height = max_side
+        width = int((cur_height / float(cur_width)) * max_side)
+    else:
+        width = max_side
+        height = int((cur_width / float(cur_height)) * max_side)
+    image = cv2.resize(image, (width, height))
+    return convert_image(image, image_mode, image_mode=temp_mode)
+
+
 def image_fromstring(image_data, mode_or_modes=None):
-    """Convert an image from a string (using PIL's image IO)
+    """Convert an image from a string (using cv2's image IO)
 
     :param: image_data: Binary image data
     :param: mode_or_modes: List of image modes or a single image mode.  A mode is
@@ -204,12 +232,12 @@ def image_fromstring(image_data, mode_or_modes=None):
     :returns: String of binary image data
     """
     if mode_or_modes is None:
-        mode_or_modes = {'type': 'pil', 'dtype': 'uint8', 'mode': 'rgb'}
-    return convert_image(Image.open(StringIO.StringIO(image_data)), mode_or_modes)
+        mode_or_modes = {'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'}
+    return convert_image(cv2.imdecode(np.frombuffer(image_data, dtype=np.uint8), 1), mode_or_modes)
 
 
 def image_tostring(image, format, image_mode=None):
-    """Convert image to a string (using PIL's image IO)
+    """Convert image to a string (using cv2's image IO)
 
     :param: image: Input image
     :param format: PIL image format to convert to (e.g., 'JPEG', 'PNG')

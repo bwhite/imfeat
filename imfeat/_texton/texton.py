@@ -16,13 +16,12 @@ def convert_leaves_all_probs_pred(image, leaves, all_probs, num_leaves):
 class TextonBase(imfeat.BaseFeature):
 
     def __init__(self):
-        super(TextonBase, self).__init__()
+        super(TextonBase, self).__init__({'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'})
         import kontort
         from imfeat._texton.msrc_model import data
         self.tp = kontort.TextonPredict(pickle.loads(data[1][1]))  # NOTE(brandyn): TP = 1 and TP2 = 0 as that is how the names were sorted
         self.tp2 = kontort.IntegralPredict(pickle.loads(data[0][1]))
         self.num_classes = 21
-        self.MODES = [{'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'}]
         self.grad = imfeat.GradientHistogram()
 
     def _make_masks(self, image):
@@ -56,6 +55,7 @@ class TextonSpatialHistogram(TextonBase):
         self.norm = norm
 
     def __call__(self, image):
+        image = self.convert(image)
         import time
         st = time.time()
         max_classes1, max_probs1, leaves1, max_classes2, max_probs2, all_probs2 = self._predict(image)
@@ -86,6 +86,7 @@ class TextonImage(TextonSpatialHistogram):
         self._keep_dims = int(size ** 2 * self.num_classes)
 
     def __call__(self, image):
+        image = self.convert(image)
         shist = super(TextonImage, self).__call__(image)
         # NOTE(brandyn): The function computes more than we need, later add another parameter to stop it early
         shist = shist[-self._keep_dims:]

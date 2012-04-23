@@ -12,17 +12,16 @@ cdef extern from "features.hpp":
     void resize(np.float64_t *im_rowmajor, int height, int width, double scale, np.float64_t *dst_rowmajor, int dst_rowmajor_size)
 
 cdef class HOGLatent(imfeat.BaseFeature):
-    cdef public object MODES
     cdef int _sbin
     cdef object _blocks
 
     def __init__(self, sbin=2, blocks=1):
-        super(HOGLatent, self).__init__()
-        self.MODES = [{'type': 'numpy', 'dtype': 'uint8', 'mode': 'rgb'}]
+        super(HOGLatent, self).__init__({'type': 'numpy', 'dtype': 'uint8', 'mode': 'rgb'})
         self._sbin = sbin
         self._blocks = blocks
 
     cpdef make_feature_mask(self, image_input):
+        image_input = self.convert(image_input)
         cdef np.ndarray image = np.ascontiguousarray(image_input, dtype=np.float64)
         cdef np.ndarray feat_shape = np.zeros(3, dtype=np.int32)
         process_feat_size(image.shape[0], image.shape[1], self._sbin, <np.int32_t *>feat_shape.data)
@@ -48,6 +47,7 @@ cdef class HOGLatent(imfeat.BaseFeature):
         Returns:
             Numpy array with dims (num_feat, num_dims)
         """
+        image_input = self.convert(image_input)
         cdef np.ndarray image = np.ascontiguousarray(imfeat.convert_image(image_input, [{'type': 'numpy', 'mode': 'rgb', 'dtype': 'uint8'}]),
                                                      dtype=np.float64)
         cdef np.ndarray feat_shape = np.zeros(3, dtype=np.int32)
@@ -80,6 +80,7 @@ cdef class HOGLatent(imfeat.BaseFeature):
         Returns:
             Numpy array with dims (rows, cols)
         """
+        image_input = self.convert(image_input)
         if sbin is None:
             sbin = self._sbin
         if blocks is None:
@@ -110,7 +111,8 @@ cdef class HOGLatent(imfeat.BaseFeature):
                                      for y in range(out.shape[0] - blocks + 1)])
         
 
-    cpdef make_features(self, image_input):
+    def __call__(self, image_input):
+        image_input = self.convert(image_input)
         cdef np.ndarray image = np.ascontiguousarray(image_input, dtype=np.float64)
         cdef np.ndarray feat_shape = np.zeros(3, dtype=np.int32)
         process_feat_size(image.shape[0], image.shape[1], self._sbin, <np.int32_t *>feat_shape.data)
@@ -119,4 +121,4 @@ cdef class HOGLatent(imfeat.BaseFeature):
         out = out.T
         out = np.asfarray(out[:, :, :-1])
         out = self._make_blocks(out, self._blocks)
-        return [np.ascontiguousarray(out.ravel())]
+        return np.ascontiguousarray(out.ravel())

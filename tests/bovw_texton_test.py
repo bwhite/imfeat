@@ -39,6 +39,7 @@ def mk(make_features, frac=.1):
 
 class Test(unittest.TestCase):
 
+    @unittest.skip('Need to update to new calling format')
     def test_0(self):
         with open('voc_bovw_texton.pkl') as clusters_fp:
             clusters = np.asfarray(pickle.load(clusters_fp))

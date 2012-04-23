@@ -51,7 +51,8 @@ cdef class PyramidHistogram(imfeat.BaseFeature):
         self.bin_width = np.ascontiguousarray(self.bin_width, dtype=np.float32)
         self.num_bin_vals = np.prod(self.num_bins)
 
-    cpdef make_features(self, np.ndarray[np.float32_t, ndim=3, mode='c'] image):
+    def __call__(self, image_input):
+        cdef np.ndarray[np.float32_t, ndim=3, mode='c'] image = self.convert(image_input)
         cdef np.ndarray bin_map = np.zeros((image.shape[0], image.shape[1]), dtype=np.int32)
         # Compute the bin map
         image_to_bin_map(<float *>image.data, image.shape[0], image.shape[1], <np.float32_t *>self.min_vals.data,
@@ -60,4 +61,4 @@ cdef class PyramidHistogram(imfeat.BaseFeature):
         out = np.asfarray(out)
         if self.norm:
             out /= np.sum(out)
-        return [out]
+        return out

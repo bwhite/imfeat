@@ -34,7 +34,7 @@ class Test(unittest.TestCase):
         for mode in modes:
             print(mode)
             feat = imfeat.Histogram(mode, style='planar')
-            b = imfeat.compute(feat, img)[0]
+            b = feat(img)
             print(b)
 
 

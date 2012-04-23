@@ -1,4 +1,4 @@
-import cv
+import cv2
 import numpy as np
 import os
 import imfeat
@@ -13,8 +13,7 @@ from . import __path__
 class ObjectBank(imfeat.BaseFeature):
 
     def __init__(self):
-        super(ObjectBank, self).__init__()
-        self.MODES = [('opencv', 'bgr', 8)]
+        super(ObjectBank, self).__init__({'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'})
         self._temp_root = tempfile.mkdtemp()
         self._temp_dir_in = self._temp_root + '/in'
         self._temp_dir_out = self._temp_root + '/out'
@@ -52,8 +51,9 @@ class ObjectBank(imfeat.BaseFeature):
     def __del__(self):
         shutil.rmtree(self._temp_root)
 
-    def make_features(self, image):
-        cv.SaveImage(self.image_path, image)
+    def __call__(self, image):
+        image = self.convert(image)
+        cv2.imwrite(self.image_path, image)
         orig_dir = os.path.abspath('.')
         try:
             os.chdir(self.path)
@@ -63,7 +63,7 @@ class ObjectBank(imfeat.BaseFeature):
             os.chdir(orig_dir)
         try:
             with open(self.feat_path) as fp:
-                return [np.asfarray([float(x.rstrip()) for x in fp])]
+                return np.asfarray([float(x.rstrip()) for x in fp])
         finally:
             os.remove(self.image_path)
             os.remove(self.feat_path)

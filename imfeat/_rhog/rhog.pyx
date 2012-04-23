@@ -27,14 +27,13 @@ cdef class RHOG(imfeat.BaseFeature):
             block_diameter:
             orientation_bins:
         """
-        # TODO Support color
+        super(RHOG, self).__init__({'type': 'numpy', 'dtype': 'uint8', 'mode': 'gray' if gray else 'rgb'})
         self._cell_diameter = cell_diameter
         self._block_diameter = block_diameter
         self._orientation_bins = orientation_bins
-        self.MODES = [('opencv', 'gray' if gray else 'rgb', 8)]
 
-    cpdef make_features(self, image_cv):
-        cdef np.ndarray image = np.ascontiguousarray(cv.GetMat(image_cv), dtype=np.uint8)
+    def __call__(self, image_np):
+        cdef np.ndarray image = self.convert(image_np)
         cdef np.ndarray image_r
         cdef np.ndarray image_g
         cdef np.ndarray image_b
@@ -61,4 +60,4 @@ cdef class RHOG(imfeat.BaseFeature):
                             self._block_diameter, self._orientation_bins)
         else:
             raise ValueError('Image must be gray or rgb')
-        return [block_bins]
+        return block_bins

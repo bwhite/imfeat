@@ -77,6 +77,7 @@ cdef class BoVW(imfeat.BaseFeature):
         points = np.vstack([feature_point_func(image) for image in images])
         return sp.cluster.vq.kmeans(points, num_clusters)[0]
 
-    def make_features(self, image):
+    def __call__(self, image):
+        image = self.convert(image)
         cdef np.ndarray neighbor_map = np.ascontiguousarray(self.feature_point_func(image), dtype=np.int32)
-        return [np.asfarray(spatial_pyramid(neighbor_map, self.levels, self.max_values))]
+        return np.asfarray(spatial_pyramid(neighbor_map, self.levels, self.max_values))

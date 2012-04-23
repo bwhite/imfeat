@@ -1,13 +1,15 @@
 import numpy as np
-import Image
+import cv2
 
 pix_height = 38
 pix_width = 15
 
 img = np.zeros((pix_height, pix_width), dtype=np.uint8)
 
+
 def save_img(img, fn):
-    Image.fromstring('L', img.shape[::-1], img.tostring()).save(fn + '.png')
+    cv2.imwrite(fn + '.png', img)
+
 
 # Make vertical gradient
 for i in range(pix_height):
