@@ -26,19 +26,20 @@ class MetaFeature(imfeat.BaseFeature):
         super(MetaFeature, self).__init__()
         self._features = [call_import(f) if isinstance(f, dict) else f
                           for f in features]
-        norm = kw.get('norm', None)
-        if 'max_side' in kw:
-            max_side = kw['max_side']
-            self.preprocess = lambda x: imfeat.resize_image_max_side(x, max_side)
-        else:
-            self.preprocess = lambda x: x
-        if norm is None:
-            self._norm = lambda x: x
-        elif norm == 'dims':
-            self._norm = lambda x: x / float(x.size)
-        else:
-            raise ValueError('Unknown value for norm=%s' % norm)
+        self.norm = kw.get('norm', None)
+        self.max_side = kw.get('max_side', None)
 
     def __call__(self, image):
-        image = self.preprocess(image)
+        if self.max_side is not None:
+            image = imfeat.resize_image_max_side(image, self.max_side)
+        if self.norm is None:
+            norm = lambda x: x
+        elif norm == 'dims':
+            norm = lambda x: x / float(x.size)
+        elif norm == 'l1':
+            norm = lambda x: x / np.sum(x)
+        elif norm == 'l2':
+            norm = lambda x: x / np.linalg.norm(x)
+        else:
+            raise ValueError('Unknown value for norm=%s' % norm)
         return np.hstack([self._norm(f(image)) for f in self._features])
