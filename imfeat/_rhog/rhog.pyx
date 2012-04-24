@@ -14,7 +14,6 @@ cdef extern from "rhog_aux.h":
 
 
 cdef class RHOG(imfeat.BaseFeature):
-    cdef public object MODES
     cdef int _cell_diameter
     cdef int _block_diameter
     cdef int _orientation_bins

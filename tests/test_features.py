@@ -81,27 +81,27 @@ class TestFeatures(unittest.TestCase):
         for feat_out, image in self._run_all_images(feature):
             image = np.asfarray(image) / 255.
             image = image.reshape((image.shape[0] * image.shape[1], image.shape[2]))
-            np.testing.assert_almost_equal(np.mean(image, 0), feat_out[0][:3])
-            print(np.var(image, 0), feat_out[0][3:6])
-            np.testing.assert_almost_equal(np.var(image, 0), feat_out[0][3:6])
+            np.testing.assert_almost_equal(np.mean(image, 0), feat_out[:3])
+            print(np.var(image, 0), feat_out[3:6])
+            np.testing.assert_almost_equal(np.var(image, 0), feat_out[3:6])
 
     def test_rhog_gray(self):
         feature = imfeat.RHOG()
         for feat_out, image in self._run_all_images(feature):
             print(feat_out)
-            print(len(feat_out[0]))
+            print(len(feat_out))
 
     def test_rhog_rgb(self):
         feature = imfeat.RHOG(gray=False)
         for feat_out, image in self._run_all_images(feature):
             print(feat_out)
-            print(len(feat_out[0]))
+            print(len(feat_out))
 
     def test_gray_hist(self):
         feature = imfeat.Histogram('gray')
         for feat_out, image in self._run_all_images(feature):
             print(feat_out)
-            print(len(feat_out[0]))
+            print(len(feat_out))
         self._feat_hist_zero(feature)
         self._feat_hist_norm(feature)
 
@@ -109,7 +109,7 @@ class TestFeatures(unittest.TestCase):
         feature = imfeat.GradientHistogram()
         for feat_out, image in self._run_all_images(feature):
             print(feat_out)
-            print(len(feat_out[0]))
+            print(len(feat_out))
         self._feat_hist_zero(feature)
         self._feat_hist_norm(feature)
 
@@ -117,21 +117,21 @@ class TestFeatures(unittest.TestCase):
         feature = imfeat.Faces()
         for feat_out, image in self._run_all_images(feature):
             print(feat_out)
-            print(len(feat_out[0]))
+            print(len(feat_out))
 
     def test_autocorrelogram(self):
         print('Autocorrelogram')
         feature = imfeat.Autocorrelogram()
         for feat_out, image in self._run_all_images(feature):
             print(feat_out)
-            print(len(feat_out[0]))
+            print(len(feat_out))
 
     def test_aahog_latent(self):
         print('Hog Latent')
         feature = imfeat.HOGLatent(2)
         for feat_out, image in self._run_all_images(feature):
             print(feat_out)
-            print(len(feat_out[0]))
+            print(len(feat_out))
         print('Hog Latent')
         image = cv2.imread('test_images/lena.ppm')
         out = feature(image)
@@ -145,7 +145,7 @@ class TestFeatures(unittest.TestCase):
         feature = imfeat.GIST()
         for feat_out, image in self._run_all_images(feature):
             print(feat_out)
-            print(len(feat_out[0]))
+            print(len(feat_out))
         # Compare against known output
         image = Image.open('test_images/lena.ppm')
         out = feature(image)

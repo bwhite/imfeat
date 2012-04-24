@@ -8,7 +8,6 @@ cdef extern from "pyramid_histogram_aux.h":
     void image_to_bin_map(float *data, int height, int width, float *min_vals, float *bin_width, np.int32_t *num_bins, np.int32_t *bin_map)
 
 cdef class PyramidHistogram(imfeat.BaseFeature):
-    cdef public object MODES
     cdef object mode
     cdef np.ndarray min_vals
     cdef np.ndarray max_vals
@@ -19,8 +18,7 @@ cdef class PyramidHistogram(imfeat.BaseFeature):
     cdef object norm
 
     def __init__(self, mode, num_bins=8, min_vals=None, max_vals=None, norm=True, levels=1):
-        super(PyramidHistogram, self).__init__()
-        self.MODES = [{'type': 'numpy', 'mode': mode, 'dtype': 'float32'}]
+        super(PyramidHistogram, self).__init__({'type': 'numpy', 'mode': mode, 'dtype': 'float32'})
         self.norm = norm
         self.levels = levels
         try:

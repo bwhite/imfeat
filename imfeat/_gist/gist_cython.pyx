@@ -8,7 +8,6 @@ cdef extern from "gist_wrapper.h":
                                   np.int32_t *orientations_per_scale, np.float32_t *desc, int desc_size)
 
 cdef class GIST(imfeat.BaseFeature):
-    cdef public object MODES
     cdef int _nblocks
     cdef np.ndarray _orientations_per_scale
 

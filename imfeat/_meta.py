@@ -40,6 +40,5 @@ class MetaFeature(imfeat.BaseFeature):
             raise ValueError('Unknown value for norm=%s' % norm)
 
     def __call__(self, image):
-        image = self._features[0].convert(image)
         image = self.preprocess(image)
         return np.hstack([self._norm(f(image)) for f in self._features])

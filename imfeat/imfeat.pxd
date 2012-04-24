@@ -1,2 +1,2 @@
 cdef class BaseFeature(object):
-    pass
+    cdef public object MODES

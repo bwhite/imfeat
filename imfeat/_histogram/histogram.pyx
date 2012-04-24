@@ -9,7 +9,6 @@ cdef extern from "histogram_aux.h":
     void histogram_gray(float *data, int height, int width, float min_val, float bin_width, np.int32_t num_bins, np.int32_t *hist)
 
 cdef class Histogram(imfeat.BaseFeature):
-    cdef public object MODES
     cdef object mode
     cdef object verbose
     cdef np.ndarray min_vals
@@ -61,13 +60,13 @@ cdef class Histogram(imfeat.BaseFeature):
 
     def __call__(self, image_np):
         image_np = self.convert(image_np)
-        cdef np.ndarray image = self.convert(image_np)
+        cdef np.ndarray image = image_np
         cdef np.ndarray out
         out = np.zeros(self.num_hist_bins, dtype=np.int32)
         height, width = image_np.shape[:2]
         if self.verbose:
             print('Min[%s] Max[%s]' % (np.min(np.min(image, 0), 0), np.max(np.max(image, 0), 0)))
-        if self.MODES[0][1] == 'gray':
+        if self.mode == 'gray':
             histogram_gray(<float *>image.data, height, width, self.min_vals[0],
                            self.bin_width[0], self.num_bins[0], <np.int32_t *>out.data)
         else:

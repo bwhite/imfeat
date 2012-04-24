@@ -9,7 +9,6 @@ cdef extern from "lbp_aux.h":
 
 
 cdef class LBP(imfeat.BaseFeature):
-    cdef public object MODES
 
     def __init__(self, norm=True):
         super(LBP, self).__init__()
