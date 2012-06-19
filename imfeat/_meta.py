@@ -31,7 +31,7 @@ class MetaFeature(imfeat.BaseFeature):
 
     def __call__(self, image):
         if self._max_side is not None:
-            image = imfeat.resize_image_max_side(image, self.max_side)
+            image = imfeat.resize_image_max_side(image, self._max_side)
         if self._norm is None:
             norm = lambda x: x
         elif self._norm == 'dims':

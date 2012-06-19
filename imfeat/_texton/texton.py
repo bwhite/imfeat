@@ -15,12 +15,15 @@ def convert_leaves_all_probs_pred(image, leaves, all_probs, num_leaves):
 
 class TextonBase(imfeat.BaseFeature):
 
-    def __init__(self):
+    def __init__(self, max_integral_trees=None):
         super(TextonBase, self).__init__({'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'})
         import kontort
         from imfeat._texton.msrc_model import data
         self.tp = kontort.TextonPredict(pickle.loads(data[1][1]))  # NOTE(brandyn): TP = 1 and TP2 = 0 as that is how the names were sorted
-        self.tp2 = kontort.IntegralPredict(pickle.loads(data[0][1]))
+        if max_integral_trees is not None:
+            self.tp2 = kontort.IntegralPredict(pickle.loads(data[0][1])[:max_integral_trees])
+        else:
+            self.tp2 = kontort.IntegralPredict(pickle.loads(data[0][1]))
         self.num_classes = 21
         self.grad = imfeat.GradientHistogram()
 
@@ -48,8 +51,8 @@ class TextonBase(imfeat.BaseFeature):
 
 class TextonSpatialHistogram(TextonBase):
 
-    def __init__(self, levels=1, other_class_thresh=None, norm=True):
-        super(TextonSpatialHistogram, self).__init__()
+    def __init__(self, levels=1, other_class_thresh=None, norm=True, **kw):
+        super(TextonSpatialHistogram, self).__init__(**kw)
         self.levels = levels
         self.other_class_thresh = other_class_thresh
         self.norm = norm
@@ -73,16 +76,16 @@ class TextonSpatialHistogram(TextonBase):
 
 class TextonHistogram(TextonSpatialHistogram):
 
-    def __init__(self, levels=1):
-        super(TextonHistogram, self).__init__(levels=levels)
+    def __init__(self, levels=1, **kw):
+        super(TextonHistogram, self).__init__(levels=levels, **kw)
 
 
 class TextonImage(TextonSpatialHistogram):
 
-    def __init__(self, size=4):
+    def __init__(self, size=4, **kw):
         levels = np.log2(size)
         assert levels == int(levels)  # NOTE(brandyn): Must be power of 2
-        super(TextonImage, self).__init__(levels=int(levels) + 1)
+        super(TextonImage, self).__init__(levels=int(levels) + 1, **kw)
         self._keep_dims = int(size ** 2 * self.num_classes)
 
     def __call__(self, image):

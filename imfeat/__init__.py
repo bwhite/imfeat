@@ -17,8 +17,12 @@ from _filter_bank import FilterBank
 from _faces.faces import Faces
 from _spatial_histogram import SpatialHistogram
 from _meta import MetaFeature
+from _grid_stats import GridStats
+from _black_bars import BlackBars
+from _unique_colors import UniqueColors
 from _object_bank.object_bank import ObjectBank
 from _texton.texton import TextonHistogram, TextonSpatialHistogram, TextonImage
+from _sorted_histogram import SortedHistogram
 from _imfeat_block_generator import CoordGeneratorBase, CoordGeneratorRect, BlockGenerator, CoordGeneratorRectRotate
 #from _rhog_dalal import rhog as rhog_dalal
 try:  # Try to import these packages to aid pyinstaller

@@ -41,6 +41,7 @@ class Test(unittest.TestCase):
                 feat = imfeat.HOGLatent(sz)
                 im = image_input.copy()
                 out = feat.make_feature_mask(im)
+                print('Dims[%d]' % out.shape[2])
                 for i in range(out.shape[2]):
                     out_s = out[:, :, i]
                     print(np.min(out_s))

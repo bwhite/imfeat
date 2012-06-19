@@ -85,6 +85,20 @@ class TestFeatures(unittest.TestCase):
             print(np.var(image, 0), feat_out[3:6])
             np.testing.assert_almost_equal(np.var(image, 0), feat_out[3:6])
 
+    def test_moments2(self):
+        import scipy.stats
+        import scipy as sp
+        feature = imfeat.Moments('gray', 6)
+        image = np.array(np.random.random(500), dtype=np.float32)
+        feat_out = feature(image)
+        np.testing.assert_almost_equal(np.mean(image), feat_out[0])
+        np.testing.assert_almost_equal(np.var(image), feat_out[1])
+        np.testing.assert_almost_equal(sp.stats.moment(image, 2), feat_out[1])
+        np.testing.assert_almost_equal(sp.stats.moment(image, 3), feat_out[2])
+        np.testing.assert_almost_equal(sp.stats.moment(image, 4), feat_out[3])
+        np.testing.assert_almost_equal(sp.stats.moment(image, 5), feat_out[4])
+        np.testing.assert_almost_equal(sp.stats.moment(image, 6), feat_out[5])
+
     def test_rhog_gray(self):
         feature = imfeat.RHOG()
         for feat_out, image in self._run_all_images(feature):

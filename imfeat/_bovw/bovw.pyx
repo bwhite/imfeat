@@ -25,6 +25,7 @@ import cv
 import numpy as np
 cimport numpy as np
 cimport imfeat
+import random
 
 
 cdef extern from "bovw_aux.h":
@@ -66,7 +67,7 @@ cdef class BoVW(imfeat.BaseFeature):
         self.levels = levels
 
     @classmethod
-    def cluster(cls, images, feature_point_func, num_clusters):
+    def cluster(cls, images, feature_point_func, num_clusters, max_image_points=None):
         try:
             import scipy.cluster
         except RuntimeError:  # NOTE(brandyn): Fixes problems where the home directory is not specified
@@ -74,7 +75,14 @@ cdef class BoVW(imfeat.BaseFeature):
             import tempfile
             os.environ['HOME'] = tempfile.gettempdir()
             import scipy.cluster
-        points = np.vstack([feature_point_func(image) for image in images])
+
+        points = []
+        for image in images:
+            p = feature_point_func(image)
+            if max_image_points is not None:
+                p = random.sample(p, min(max_image_points, len(p)))
+            points.append(p)
+        points = np.vstack(points)
         return sp.cluster.vq.kmeans(points, num_clusters)[0]
 
     def __call__(self, image):

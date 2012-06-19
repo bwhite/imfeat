@@ -21,7 +21,10 @@ cdef class Moments(imfeat.BaseFeature):
         image_np = self.convert(image_np)
         cdef np.ndarray image = np.asfarray(image_np, dtype=np.float64)
         cdef int num_pixels = image.shape[0] * image.shape[1]
-        image = np.ascontiguousarray(image.reshape((num_pixels, image.shape[2])))
+        if image.ndim == 2:
+            image = np.ascontiguousarray(image.reshape((num_pixels, 1)))
+        else:
+            image = np.ascontiguousarray(image.reshape((num_pixels, image.shape[2])))
         cdef np.ndarray mean = np.mean(image, 0)
         cdef np.ndarray diff = image - mean
         out = [mean]
