@@ -56,16 +56,18 @@ class Test(unittest.TestCase):
                     n += 1
 
     def test_tostring(self):
-        n = 0
         for fn in ['lena.jpg', 'lena.pgm', 'lena.ppm']:
             for i in load_images(fn):
                 for ext in ['jpeg', 'png']:
                     o = imfeat.image_tostring(i, ext)
-                    #open('tostring-%.3d.%s' % (n, ext), 'w').write(o)
-                    o = imfeat.image_tostring(imfeat.image_fromstring(imfeat.image_tostring(i, ext), {'type': 'pil', 'dtype': 'uint8', 'mode': 'rgb'}), ext)
-                    #open('fromstring-%.3d.%s' % (n, ext), 'w').write(o)
-                    n += 1
-
+                    o2 = imfeat.image_tostring(imfeat.image_fromstring(imfeat.image_tostring(i, ext)), ext)
+                    if ext == 'png':
+                        np.testing.assert_equal(o, o2)
+                    s = imfeat.image_fromstring(o)
+                    s2 = imfeat.image_fromstring(o2)
+                    # No more than 9% of the pixels differ by more than 3
+                    self.assertLess(np.mean(np.abs(s - s2) > 3), .09)
+                    
 
 if __name__ == '__main__':
     unittest.main()
