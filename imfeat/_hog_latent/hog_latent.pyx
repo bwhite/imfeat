@@ -111,7 +111,7 @@ cdef class HOGLatent(imfeat.BaseFeature):
                                      for y in range(out.shape[0] - blocks + 1)])
         
 
-    def __call__(self, image_input):
+    def __call__(self, image_input, ravel=True):
         image_input = self.convert(image_input)
         cdef np.ndarray image = np.ascontiguousarray(image_input, dtype=np.float64)
         cdef np.ndarray feat_shape = np.zeros(3, dtype=np.int32)
@@ -121,4 +121,7 @@ cdef class HOGLatent(imfeat.BaseFeature):
         out = out.T
         out = np.asfarray(out[:, :, :-1])
         out = self._make_blocks(out, self._blocks)
-        return np.ascontiguousarray(out.ravel())
+        if ravel:
+            return np.ascontiguousarray(out.ravel())
+        else:
+            return np.ascontiguousarray(out)
