@@ -249,10 +249,17 @@ def image_tostring(image, format, image_mode=None):
     :returns: String of binary image data
     """
     if image_to_mode(image)['mode'] == 'gray':
-        image = convert_image(image, {'type': 'pil', 'dtype': 'uint8', 'mode': 'gray'}, image_mode=image_mode)
+        image = convert_image(image, {'type': 'numpy', 'dtype': 'uint8', 'mode': 'gray'}, image_mode=image_mode)
     else:
-        image = convert_image(image, {'type': 'pil', 'dtype': 'uint8', 'mode': 'rgb'}, image_mode=image_mode)
-    fp = StringIO.StringIO()
-    image.save(fp, format=format)
-    fp.seek(0)
-    return fp.read()
+        image = convert_image(image, {'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'}, image_mode=image_mode)
+    format = format.upper()
+    if format in ('.JPEG', '.JPG', 'JPG', 'JPEG'):
+        format = '.jpg'
+    elif format in ('.PNG', 'PNG'):
+        format = '.png'
+    else:
+        raise ValueError('Unknown format [%s]' % format)
+    # NOTE(brandyn): This uses cv.EncodeImage as cv2.imencode is broken
+    image_mat = cv.fromarray(image)
+    data_out = cv.EncodeImage(format, image_mat)
+    return np.asarray(data_out).tostring()
