@@ -142,7 +142,7 @@ def convert_image(image, mode_or_modes, image_mode=None):
             image = Image.fromarray(image)
             image_mode['type'] = 'pil'
         elif out_mode['type'] == 'opencv':
-            image = cv.GetImage(cv.fromarray(image))
+            image = cv.GetImage(cv.fromarray(np.ascontiguousarray(image)))
             image_mode['type'] = 'opencv'
     try:
         assert image_mode == out_mode
@@ -260,6 +260,6 @@ def image_tostring(image, format, image_mode=None):
     else:
         raise ValueError('Unknown format [%s]' % format)
     # NOTE(brandyn): This uses cv.EncodeImage as cv2.imencode is broken
-    image_mat = cv.fromarray(image)
+    image_mat = cv.fromarray(np.ascontiguousarray(image))
     data_out = cv.EncodeImage(format, image_mat)
     return np.asarray(data_out).tostring()
