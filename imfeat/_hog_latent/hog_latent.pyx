@@ -120,7 +120,10 @@ cdef class HOGLatent(imfeat.BaseFeature):
         process(<np.float64_t *>image.data, image.shape[0], image.shape[1], self._sbin, <np.float64_t *>out.data, np.prod(feat_shape))
         out = out.T
         out = np.asfarray(out[:, :, :-1])
-        out = self._make_blocks(out, self._blocks)
+        try:
+            out = self._make_blocks(out, self._blocks)
+        except ValueError:
+            raise ValueError('Image is too small[%s]' % (image_input.shape,))
         if ravel:
             return np.ascontiguousarray(out.ravel())
         else:
