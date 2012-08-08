@@ -5,11 +5,11 @@ import cv2
 
 
 def convert_leaves_all_probs_pred(image, leaves, all_probs, num_leaves):
-    import kontort
+    import imseg
     preds = []  # NOTE(brandyn): This has the ILP turned off
     preds = np.ascontiguousarray(preds, dtype=np.float64)
-    out0 = kontort.convert_labels_to_integrals(leaves, num_leaves)
-    out1 = kontort.convert_all_probs_to_integrals(all_probs)
+    out0 = imseg.convert_labels_to_integrals(leaves, num_leaves)
+    out1 = imseg.convert_all_probs_to_integrals(all_probs)
     return preds, np.ascontiguousarray(np.dstack([out0, out1]))
 
 
@@ -17,13 +17,13 @@ class TextonBase(imfeat.BaseFeature):
 
     def __init__(self, max_integral_trees=None):
         super(TextonBase, self).__init__({'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'})
-        import kontort
+        import imseg
         from imfeat._texton.msrc_model import data
-        self.tp = kontort.TextonPredict(pickle.loads(data[1][1]))  # NOTE(brandyn): TP = 1 and TP2 = 0 as that is how the names were sorted
+        self.tp = imseg.TextonPredict(pickle.loads(data[1][1]))  # NOTE(brandyn): TP = 1 and TP2 = 0 as that is how the names were sorted
         if max_integral_trees is not None:
-            self.tp2 = kontort.IntegralPredict(pickle.loads(data[0][1])[:max_integral_trees])
+            self.tp2 = imseg.IntegralPredict(pickle.loads(data[0][1])[:max_integral_trees])
         else:
-            self.tp2 = kontort.IntegralPredict(pickle.loads(data[0][1]))
+            self.tp2 = imseg.IntegralPredict(pickle.loads(data[0][1]))
         self.num_classes = 21
         self.grad = imfeat.GradientHistogram()
 
