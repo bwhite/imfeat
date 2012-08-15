@@ -17,14 +17,15 @@ cdef class Autocorrelogram(imfeat.BaseFeature):
         super(Autocorrelogram, self).__init__({'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'})
         assert unique_colors == 16 or unique_colors == 64
         self.distance_set = np.ascontiguousarray(distance_set, dtype=np.int32)
-        self.unique_colors = unique_colors
+        self.unique_colors = int(unique_colors)
 
     def __call__(self, image_in):
-        image_in = self.convert(image_in)
+        image_in = np.ascontiguousarray(self.convert(image_in), dtype=np.uint8)
         cdef np.ndarray image = image_in
         cdef int out_ac_size = self.unique_colors * len(self.distance_set)
         cdef np.ndarray out = np.zeros(out_ac_size)
-        cdef int height = image_in.shape[0], width = image_in.shape[1]
+        cdef int height = image_in.shape[0]
+        cdef int width = image_in.shape[1]
         cdef np.ndarray image_packed = np.zeros(height * width, dtype=np.uint8)
         if self.unique_colors == 64:
             convert_colors_rg64(<np.uint8_t *>image.data, height * width, <np.uint8_t *>image_packed.data)

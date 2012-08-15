@@ -10,7 +10,8 @@ void convert_colors_rg16(unsigned char *data, int size, unsigned char *out) {
   int val;
   for (int i = 0; i < size; i++) {
     val = 0;
-    r = data[i*3];
+    // Color is in BGR
+    r = data[i*3+2];
     g = data[i*3+1];
     
     if (r <= 127)
@@ -37,9 +38,9 @@ void convert_colors_rg16(unsigned char *data, int size, unsigned char *out) {
 void convert_colors_rg64(unsigned char *data, int size, unsigned char *out) {
   unsigned char r, g, b;
   for (int i = 0; i < size; i++) {
-    r = data[i*3] & 0xC0;
+    r = data[i*3+2] & 0xC0;
     g = data[i*3+1] & 0xC0;
-    b = data[i*3+2] & 0xC0;
+    b = data[i*3] & 0xC0;
     
     out[i] = (r >> 2) + (g >> 4) + (b >> 6);
   }
