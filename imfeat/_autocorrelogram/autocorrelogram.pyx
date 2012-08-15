@@ -35,4 +35,5 @@ cdef class Autocorrelogram(imfeat.BaseFeature):
             raise ValueError('Invalid unique_colors value!')
         autocorrelogram(<np.uint8_t *>image_packed.data, height, width, self.unique_colors,
                         <int *>self.distance_set.data, self.distance_set.size, <np.float64_t *>out.data, out_ac_size)
-        return np.nan_to_num(out)
+        out = np.nan_to_num(out)
+        return out / np.sum(out)
