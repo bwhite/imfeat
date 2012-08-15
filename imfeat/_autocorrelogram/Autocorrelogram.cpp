@@ -75,6 +75,8 @@ void Autocorrelogram::update_lambda_x(const unsigned char *data, int k, unsigned
   for (int i = max_dist; i < max_height; ++i)
     for (int j = max_dist; j < max_width; ++j) {
       int off = i * width + j;
+      assert(0 <= i && i < height);
+      assert(0 <= j + k && j + k < width);
       if (data[off + k] == color)
 	++lambda_x[off];
     }
@@ -84,6 +86,8 @@ void Autocorrelogram::update_lambda_y(const unsigned char *data, int k, unsigned
   for (int i = max_dist; i < max_height; ++i)
     for (int j = max_dist; j < max_width; ++j) {
       int off = i * width + j;
+      assert(0 <= i + k && i + k < height);
+      assert(0 <= j && j < width);
       if (data[off + k * width] == color)
 	++lambda_y[off];
     }
