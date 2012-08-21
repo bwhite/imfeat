@@ -27,7 +27,7 @@ class ColorNaming(imfeat.BaseFeature):
         if not converted:
             image = self.convert(image)
         image = (image / 8).astype(np.int32)
-        image = image[:, :, 0] + image[:, :, 1] * 32 + image[:, :, 0] * 1024
+        image = image[:, :, 2] + image[:, :, 1] * 32 + image[:, :, 0] * 1024  # BGR
         return self.w2c[image, :]
 
     def __call__(self, image):
