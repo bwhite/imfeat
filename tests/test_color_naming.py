@@ -15,7 +15,7 @@ class Test(unittest.TestCase):
         pass
 
     def test_name(self):
-        img = cv2.imread('test_images/lena.jpg')
+        img = cv2.imread('test_images/dice_rgba.png')
         cn = imfeat.ColorNaming(size=5)
         print cn.make_feature_mask(img).shape
         print cn.color_names[np.argmax(cn(img).reshape(5, 5, 11), 2)]

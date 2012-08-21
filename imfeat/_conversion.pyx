@@ -175,15 +175,19 @@ def resize_image(image, height, width=None, image_mode=None):
     cur_height, cur_width = image.shape[:2]
     height_ratio = height / float(cur_height)
     width_ratio = width / float(cur_width)
+    interpolation = cv2.INTER_LINEAR
+    if width_ratio < .5:
+        interpolation = cv2.INTER_AREA
+        print('Using INTER_AREA interpolation[%f]' % width_ratio)
     # The larger ratio is the side that will get met exactly
     if width_ratio > height_ratio:
         new_height = int(np.round(cur_height * width_ratio))
-        image = cv2.resize(image, (width, new_height))
+        image = cv2.resize(image, (width, new_height), interpolation=interpolation)
         height_offset = (new_height - height) / 2
         image = image[height_offset:height_offset + height]
     else:
         new_width = int(np.round(cur_width * height_ratio))
-        image = cv2.resize(image, (new_width, height))
+        image = cv2.resize(image, (new_width, height), interpolation=interpolation)
         width_offset = (new_width - width) / 2
         image = image[:, width_offset:width_offset + width]
     return convert_image(image, image_mode, image_mode=temp_mode)
@@ -207,6 +211,11 @@ def resize_image_max_side(image, max_side, image_mode=None):
     temp_mode['type'] = 'numpy'
     image = convert_image(image, temp_mode)
     cur_height, cur_width = image.shape[:2]
+    interpolation = cv2.INTER_LINEAR
+    size_ratio = size / float(max(cur_width, cur_height))
+    if size_ratio < .5:
+        interpolation = cv2.INTER_AREA
+        print('Using INTER_AREA interpolation[%f]' % size_ratio)
     if cur_height > cur_width:
         height = max_side
         width = int((cur_height / float(cur_width)) * max_side)
