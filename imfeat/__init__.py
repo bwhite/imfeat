@@ -24,6 +24,7 @@ from _object_bank.object_bank import ObjectBank
 from _texton.texton import TextonHistogram, TextonSpatialHistogram, TextonImage
 from _sorted_histogram import SortedHistogram
 from _imfeat_block_generator import CoordGeneratorBase, CoordGeneratorRect, BlockGenerator, CoordGeneratorRectRotate
+from _color_naming.color_naming import ColorNaming
 #from _rhog_dalal import rhog as rhog_dalal
 try:  # Try to import these packages to aid pyinstaller
     import numpy as _np
