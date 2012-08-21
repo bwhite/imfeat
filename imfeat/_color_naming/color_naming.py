@@ -10,6 +10,18 @@ class ColorNaming(imfeat.BaseFeature):
         super(ColorNaming, self).__init__({'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'})
         self.size = size
         self.w2c = np.array([map(float, x.split())[3:] for x in gzip.GzipFile(__path__[0] + '/data/w2c.txt.gz')])
+        self.color_names = np.array('black blue brown gray green orange pink purple red white yellow'.split())
+        self.color_values = np.array([[0, 0, 0],
+                                      [255, 0, 0],
+                                      [63, 102, 127],
+                                      [127, 127, 127],
+                                      [0, 255, 0],
+                                      [0, 204, 255],
+                                      [255, 127, 255],
+                                      [255, 0, 255],
+                                      [0, 0, 255],
+                                      [255, 255, 255],
+                                      [0, 255, 255]], dtype=np.uint8)  # BGR
 
     def make_feature_mask(self, image, converted=False):
         if not converted:
