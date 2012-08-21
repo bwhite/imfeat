@@ -212,7 +212,7 @@ def resize_image_max_side(image, max_side, image_mode=None):
     image = convert_image(image, temp_mode)
     cur_height, cur_width = image.shape[:2]
     interpolation = cv2.INTER_LINEAR
-    size_ratio = size / float(max(cur_width, cur_height))
+    size_ratio = max_side / float(max(cur_width, cur_height))
     if size_ratio < .5:
         interpolation = cv2.INTER_AREA
         print('Using INTER_AREA interpolation[%f]' % size_ratio)
