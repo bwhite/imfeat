@@ -21,7 +21,7 @@ from _grid_stats import GridStats
 from _black_bars import BlackBars
 from _unique_colors import UniqueColors
 from _object_bank.object_bank import ObjectBank
-from _texton.texton import TextonHistogram, TextonSpatialHistogram, TextonImage
+from _texton.texton import TextonHistogram, TextonSpatialHistogram, TextonImage, TextonBase
 from _sorted_histogram import SortedHistogram
 from _imfeat_block_generator import CoordGeneratorBase, CoordGeneratorRect, BlockGenerator, CoordGeneratorRectRotate
 from _color_naming.color_naming import ColorNaming

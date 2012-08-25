@@ -15,16 +15,19 @@ def convert_leaves_all_probs_pred(image, leaves, all_probs, num_leaves):
 
 class TextonBase(imfeat.BaseFeature):
 
-    def __init__(self, max_integral_trees=None):
+    def __init__(self, max_integral_trees=None, tp=None, tp2=None, num_classes=21):
         super(TextonBase, self).__init__({'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'})
         import imseg
-        from imfeat._texton.msrc_model import data
-        self.tp = imseg.TextonPredict(pickle.loads(data[1][1]))  # NOTE(brandyn): TP = 1 and TP2 = 0 as that is how the names were sorted
+        if not (tp and tp2):
+            from imfeat._texton.msrc_model import data
+            tp = pickle.loads(data[1][1])
+            tp2 = pickle.loads(data[0][1])
+        self.tp = imseg.TextonPredict(tp)  # NOTE(brandyn): TP = 1 and TP2 = 0 as that is how the names were sorted
         if max_integral_trees is not None:
-            self.tp2 = imseg.IntegralPredict(pickle.loads(data[0][1])[:max_integral_trees])
+            self.tp2 = imseg.IntegralPredict(tp2[:max_integral_trees])
         else:
-            self.tp2 = imseg.IntegralPredict(pickle.loads(data[0][1]))
-        self.num_classes = 21
+            self.tp2 = imseg.IntegralPredict(tp2)
+        self.num_classes = num_classes
         self.grad = imfeat.GradientHistogram()
 
     def _make_masks(self, image):
