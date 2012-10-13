@@ -42,7 +42,7 @@ class Faces(imfeat.BaseFeature):
         faces = self._detect_faces(image)
         if faces:
             mean_pos = np.mean(np.asfarray(faces), 0)
-            mean_pos[0] /= image.size[0]
-            mean_pos[1] /= image.size[1]
+            mean_pos[0] /= image.shape[1]
+            mean_pos[1] /= image.shape[0]
             return np.asfarray([len(faces)] + mean_pos.tolist())
         return np.zeros(5)
