@@ -20,16 +20,17 @@ class Faces(imfeat.BaseFeature):
             else:
                 raise ValueError("Can't find .xml file!")
 
-    def _detect_faces(self, img):
+    def _detect_faces(self, image):
+        image = self.convert(image)
         cascade = self._cascade
         min_size = (20, 20)
         image_scale = 2
         haar_scale = 1.2
         min_neighbors = 2
         haar_flags = 0
-        small_width = img.shape[1] / image_scale
-        small_height = img.shape[0] / image_scale
-        small_img = cv2.resize(img, (small_width, small_height))
+        small_width = image.shape[1] / image_scale
+        small_height = image.shape[0] / image_scale
+        small_img = cv2.resize(image, (small_width, small_height))
         cv2.equalizeHist(small_img, small_img)
         faces = cascade.detectMultiScale(small_img, scaleFactor=haar_scale, minNeighbors=min_neighbors, flags=haar_flags, minSize=min_size)
         return [((x * image_scale, y * image_scale,
