@@ -33,15 +33,15 @@ class Faces(imfeat.BaseFeature):
         small_img = cv2.resize(image, (small_width, small_height))
         cv2.equalizeHist(small_img, small_img)
         faces = cascade.detectMultiScale(small_img, scaleFactor=haar_scale, minNeighbors=min_neighbors, flags=haar_flags, minSize=min_size)
-        return [((x * image_scale, y * image_scale,
-                  w * image_scale, h * image_scale), n)
-                for (x, y, w, h), n in faces]
+        return [(x * image_scale, y * image_scale,
+                 w * image_scale, h * image_scale)
+                for x, y, w, h in faces]
 
     def __call__(self, image):
         image = self.convert(image)
         faces = self._detect_faces(image)
         if faces:
-            mean_pos = np.mean(np.asfarray([x[0] for x in faces]), 0)
+            mean_pos = np.mean(np.asfarray(faces), 0)
             mean_pos[0] /= image.size[0]
             mean_pos[1] /= image.size[1]
             return np.asfarray([len(faces)] + mean_pos.tolist())
