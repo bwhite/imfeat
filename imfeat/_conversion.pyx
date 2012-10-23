@@ -216,10 +216,10 @@ def resize_image_max_side(image, max_side, image_mode=None):
         interpolation = cv2.INTER_AREA
     if cur_height > cur_width:
         height = max_side
-        width = int((cur_height / float(cur_width)) * max_side)
+        width = int(np.round((float(cur_width) / cur_height) * max_side))
     else:
         width = max_side
-        height = int((cur_width / float(cur_height)) * max_side)
+        height = int(np.round((float(cur_height) / cur_width) * max_side))
     image = cv2.resize(image, (width, height))
     return convert_image(image, image_mode, image_mode=temp_mode)
 
