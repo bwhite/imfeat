@@ -2,7 +2,7 @@ try:
     import unittest2 as unittest
 except ImportError:
     import unittest
-import Image
+from PIL import Image
 import cv
 import cv2
 import imfeat

@@ -29,7 +29,7 @@ from _color_naming.color_naming import ColorNaming
 try:  # Try to import these packages to aid pyinstaller
     import numpy as _np
     import cv as _cv
-    import Image
+    from PIL import Image
     import cv2 as _cv2
 except ImportError:
     pass

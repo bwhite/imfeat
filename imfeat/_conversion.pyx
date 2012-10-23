@@ -2,7 +2,7 @@ import numpy as np
 cimport numpy as np
 import cv
 import cv2
-import Image
+from PIL import Image
 import warnings
 import cStringIO as StringIO
     
@@ -240,7 +240,11 @@ def image_fromstring(image_data, mode_or_modes=None):
     """
     if mode_or_modes is None:
         mode_or_modes = {'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'}
-    return convert_image(cv2.imdecode(np.frombuffer(image_data, dtype=np.uint8), 1), mode_or_modes)
+    image = cv2.imdecode(np.frombuffer(image_data, dtype=np.uint8), 1)
+    if image is None:  # Try using PIL
+        image = np.asarray(Image.open(StringIO.StringIO(image_data)).convert('RGB'))
+        image = np.ascontiguousarray(image[:, :, ::-1])
+    return convert_image(image, mode_or_modes)
 
 
 def image_tostring(image, format, image_mode=None):

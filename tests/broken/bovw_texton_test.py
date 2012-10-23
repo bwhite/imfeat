@@ -21,7 +21,7 @@ __license__ = 'GPL V3'
 import unittest
 
 import numpy as np
-import Image
+from PIL import Image
 import pickle
 
 import imfeat

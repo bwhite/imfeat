@@ -1,5 +1,5 @@
 import unittest
-import Image
+from PIL import Image
 import imfeat
 import hashlib
 import numpy as np
