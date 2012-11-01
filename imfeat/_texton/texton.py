@@ -19,7 +19,7 @@ class TextonBase(imfeat.BaseFeature):
         super(TextonBase, self).__init__({'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'})
         self._max_integral_trees = max_integral_trees
         self._tp = tp
-        self._tp = tp2
+        self._tp2 = tp2
         import imseg
         if not (tp and tp2):
             from imfeat._texton.msrc_model import data
