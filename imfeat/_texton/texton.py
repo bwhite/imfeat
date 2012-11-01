@@ -17,6 +17,9 @@ class TextonBase(imfeat.BaseFeature):
 
     def __init__(self, max_integral_trees=None, tp=None, tp2=None, num_classes=21):
         super(TextonBase, self).__init__({'type': 'numpy', 'dtype': 'uint8', 'mode': 'bgr'})
+        self._max_integral_trees = max_integral_trees
+        self._tp = tp
+        self._tp = tp2
         import imseg
         if not (tp and tp2):
             from imfeat._texton.msrc_model import data
@@ -29,6 +32,9 @@ class TextonBase(imfeat.BaseFeature):
             self.tp2 = imseg.IntegralPredict(tp2)
         self.num_classes = num_classes
         self.grad = imfeat.GradientHistogram()
+
+    def __reduce__(self):
+        return (TextonBase, (self._max_integral_trees, self._tp, self._tp2, self.num_classes))
 
     def _make_masks(self, image):
         image = imfeat.convert_image(image, [{'type': 'numpy', 'mode': 'bgr', 'dtype': 'uint8'}])
