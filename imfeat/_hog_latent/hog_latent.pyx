@@ -34,7 +34,7 @@ cdef class HOGLatent(imfeat.BaseFeature):
         ycoords = np.clip(ycoords / self._sbin, 0, out.shape[0] - 1)
         return np.ascontiguousarray(out[ycoords, xcoords, :])
 
-    cpdef compute_dense(self, image_input, sbin=None, blocks=None):
+    cpdef compute_dense_2d(self, image_input, sbin=None, blocks=None):
         """Compute a set of dense feature vectors
 
         Intended for use where localization of the features is not necessary
@@ -63,6 +63,22 @@ cdef class HOGLatent(imfeat.BaseFeature):
         out = out.T
         out = np.asfarray(out[:, :, :-1])
         out = self._make_blocks(out, blocks)
+        return np.ascontiguousarray(out)
+
+    cpdef compute_dense(self, image_input, sbin=None, blocks=None):
+        """Compute a set of dense feature vectors
+
+        Intended for use where localization of the features is not necessary
+
+        Args:
+            image_input: Image input
+            sbin: Bin size (default is to use what is used in the constructor)
+            blocks: Number of cells per block (default is to use what is used in the constructor)
+
+        Returns:
+            Numpy array with dims (num_feat, num_dims)
+        """
+        out = self.compute_dense_2d(image_input, sbin=sbin, blocks=blocks)
         return np.ascontiguousarray(out.reshape((out.shape[0] * out.shape[1], out.shape[2])))
 
     def make_bow_mask(self, image_input, clusters, sbin=None, blocks=None):
