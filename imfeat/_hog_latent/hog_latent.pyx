@@ -20,6 +20,9 @@ cdef class HOGLatent(imfeat.BaseFeature):
         self._sbin = sbin
         self._blocks = blocks
 
+    def __reduce__(self):
+        return (HOGLatent, (self._sbin, self._blocks))
+
     cpdef make_feature_mask(self, image_input):
         image_input = self.convert(image_input)
         cdef np.ndarray image = np.ascontiguousarray(image_input, dtype=np.float64)
