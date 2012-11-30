@@ -66,6 +66,9 @@ cdef class BoVW(imfeat.BaseFeature):
         self.max_values = max_values
         self.levels = levels
 
+    def __reduce__(self):
+        return (BoVW, (self.feature_point_func, self.max_values, self.levels))
+
     @classmethod
     def cluster(cls, images, feature_point_func, num_clusters, max_image_points=None):
         try:
