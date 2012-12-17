@@ -287,8 +287,8 @@ class ImagePreprocessor(object):
 
     def __call__(self, image_binary):
         image = image_fromstring(image_binary)
-        if self.mode == 'force_max_side':  # max_side=size
+        if self.method == 'force_max_side':  # max_side=size
             image_out = resize_image_max_side(image, self.size)
         else:
-            raise ValueError('Unknown mode: [%s]' % self.mode)
+            raise ValueError('Unknown method: [%s]' % self.method)
         return image_tostring(image_out, self.compression)
