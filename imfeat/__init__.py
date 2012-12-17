@@ -1,5 +1,5 @@
 from _imfeat import BaseFeature
-from _imfeat_conversion import convert_image, resize_image, image_tostring, image_fromstring, resize_image_max_side
+from _imfeat_conversion import convert_image, resize_image, image_tostring, image_fromstring, resize_image_max_side, ImagePreprocessor
 from _dummy import Dummy
 from _rand import Random
 from _tiny_image import TinyImage

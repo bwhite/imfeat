@@ -274,3 +274,21 @@ def image_tostring(image, format, image_mode=None):
     image_mat = cv.fromarray(np.ascontiguousarray(image))
     data_out = cv.EncodeImage(format, image_mat)
     return np.asarray(data_out).tostring()
+
+
+class ImagePreprocessor(object):
+
+    def __init__(self, method, size=None, compression='jpg'):
+        self.method = method
+        self.size = size
+        self.compression = compression.lower()
+        assert self.compression in ('jpg', 'png')
+        assert self.method in ('force_max_side',)
+
+    def __call__(self, image_binary):
+        image = imfeat.image_fromstring(image_binary)
+        if self.mode == 'force_max_side':  # max_side=size
+            image_out = imfeat.resize_image_max_side(image, self.size)
+        else:
+            raise ValueError('Unknown mode: [%s]' % self.mode)
+        return imfeat.image_tostring(image_out, self.compression)
