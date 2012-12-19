@@ -211,16 +211,17 @@ def resize_image_max_side(image, max_side, image_mode=None):
     image = convert_image(image, temp_mode)
     cur_height, cur_width = image.shape[:2]
     size_ratio = max_side / float(max(cur_width, cur_height))
-    interpolation = cv2.INTER_LINEAR
-    if size_ratio < .5:
-        interpolation = cv2.INTER_AREA
-    if cur_height > cur_width:
-        height = max_side
-        width = int(np.round((float(cur_width) / cur_height) * max_side))
-    else:
-        width = max_side
-        height = int(np.round((float(cur_height) / cur_width) * max_side))
-    image = cv2.resize(image, (width, height))
+    if size_ratio != 1:
+        interpolation = cv2.INTER_LINEAR
+        if size_ratio < .5:
+            interpolation = cv2.INTER_AREA
+        if cur_height > cur_width:
+            height = max_side
+            width = int(np.round((float(cur_width) / cur_height) * max_side))
+        else:
+            width = max_side
+            height = int(np.round((float(cur_height) / cur_width) * max_side))
+        image = cv2.resize(image, (width, height))
     return convert_image(image, image_mode, image_mode=temp_mode)
 
 
@@ -283,12 +284,15 @@ class ImagePreprocessor(object):
         self.size = size
         self.compression = compression.lower()
         assert self.compression in ('jpg', 'png')
-        assert self.method in ('force_max_side',)
+        assert self.method in ('force_max_side', 'max_side')
 
     def __call__(self, image_binary):
         image = image_fromstring(image_binary)
         if self.method == 'force_max_side':  # max_side=size
             image_out = resize_image_max_side(image, self.size)
+        elif self.method == 'max_side':  # max_side >= size
+            size = int(min(np.max(image.shape[:2]), self.size))
+            image_out = resize_image_max_side(image, size)
         else:
             raise ValueError('Unknown method: [%s]' % self.method)
         return image_tostring(image_out, self.compression)
