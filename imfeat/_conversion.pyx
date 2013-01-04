@@ -286,8 +286,15 @@ class ImagePreprocessor(object):
         assert self.compression in ('jpg', 'png')
         assert self.method in ('force_max_side', 'max_side')
 
-    def __call__(self, image_binary):
-        image = image_fromstring(image_binary)
+    def asbinary(self, image_or_image_binary):
+        image = self.asarray(image_or_image_binary)
+        return image_tostring(image, self.compression)
+
+    def asarray(self, image_or_image_binary):
+        if isinstance(image_or_image_binary, str):
+            image = image_fromstring(image_binary)
+        else:
+            image = image_or_image_binary
         if self.method == 'force_max_side':  # max_side=size
             image_out = resize_image_max_side(image, self.size)
         elif self.method == 'max_side':  # max_side >= size
@@ -295,4 +302,5 @@ class ImagePreprocessor(object):
             image_out = resize_image_max_side(image, size)
         else:
             raise ValueError('Unknown method: [%s]' % self.method)
-        return image_tostring(image_out, self.compression)
+        return image_out
+
