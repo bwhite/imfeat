@@ -292,7 +292,7 @@ class ImagePreprocessor(object):
 
     def asarray(self, image_or_image_binary):
         if isinstance(image_or_image_binary, str):
-            image = image_fromstring(image_binary)
+            image = image_fromstring(image_or_image_binary)
         else:
             image = image_or_image_binary
         if self.method == 'force_max_side':  # max_side=size
