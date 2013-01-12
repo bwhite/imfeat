@@ -82,7 +82,7 @@ cdef class HOGLatent(imfeat.BaseFeature):
             Numpy array with dims (num_feat, num_dims)
         """
         out = self.compute_dense_2d(image_input, sbin=sbin, blocks=blocks)
-        if out.ndims != 3:
+        if out.ndim != 3:
             return np.array([], dtype=np.double)
         return np.ascontiguousarray(out.reshape((out.shape[0] * out.shape[1], out.shape[2])))
 
