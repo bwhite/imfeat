@@ -39,5 +39,5 @@ cdef class Dedupe(imfeat.BaseFeature):
     def __call__(self, image):
         cdef np.ndarray image_in = self.convert(image)
         cdef np.ndarray hist = np.zeros(384, dtype=np.double)
-        dedupe_image_to_feat(<np.uint8_t *>image_in.data, <np.float64_t *> hist_out.data, image.shape[0], image.shape[1])
+        dedupe_image_to_feat(<np.uint8_t *>image_in.data, <np.float64_t *> hist.data, image.shape[0], image.shape[1])
         return hist
