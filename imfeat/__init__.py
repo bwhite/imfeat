@@ -8,6 +8,7 @@ from _imfeat_autocorrelogram import Autocorrelogram
 from _imfeat_histogram import Histogram
 from _imfeat_moments import Moments
 from _imfeat_rhog import RHOG
+from _imfeat_dedupe import Dedupe
 from _imfeat_hog_latent import HOGLatent
 from _imfeat_pyramid_histogram import PyramidHistogram
 from _imfeat_gist import GIST
