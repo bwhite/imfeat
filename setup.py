@@ -85,7 +85,7 @@ ext_modules = [Extension("_imfeat",
                           'imfeat/_gist/standalone_image.c'],
                          extra_compile_args=['-I', np.get_include(), '-D', 'USE_GIST',
                                              '-D', 'STANDALONE_GIST'],
-                         extra_link_args=['-l', 'fftw3f'])]
+                         extra_link_args=['-l', 'fftw3'])]
 
 for e in ext_modules:
     e.pyrex_directives = {"embedsignature": True}
