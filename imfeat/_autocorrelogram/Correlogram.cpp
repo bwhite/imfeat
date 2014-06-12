@@ -3,7 +3,7 @@
 
 #include <cstring>
 #include <cassert>
-#include "Autocorrelogram.hpp"
+#include "Correlogram.hpp"
 
 void convert_colors_rg16(unsigned char *data, int size, unsigned char *out) {
   unsigned char r, g;

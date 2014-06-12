@@ -12,9 +12,8 @@ def get_cython_version():
     Raises:
         ImportError: Can't load cython or find version
     """
-    import Cython.Compiler.Main
-    match = re.search('^([0-9]+)\.([0-9]+)',
-                      Cython.Compiler.Main.Version.version)
+    import Cython.Compiler.Main as cymain
+    match = re.search('^([0-9]+)\.([0-9]+)', cymain.Version.version)
     try:
         return map(int, match.groups())
     except AttributeError:
@@ -28,7 +27,7 @@ try:
         raise ImportError
     from Cython.Distutils import build_ext
     source_ext = '.pyx'
-    cmdclass = {'build_ext': build_ext}
+    cmdclass = { 'build_ext': build_ext }
 except ImportError:
     source_ext = '.c'
     cmdclass = {}
@@ -51,7 +50,7 @@ ext_modules = [Extension("_imfeat",
                          include_dirs=['imfeat']),
                Extension("_imfeat_autocorrelogram",
                          ["imfeat/_autocorrelogram/autocorrelogram" + source_ext,
-                          'imfeat/_autocorrelogram/Autocorrelogram.cpp'],
+                          'imfeat/_autocorrelogram/Correlogram.cpp'],
                          extra_compile_args=['-I', np.get_include()]),
                Extension("_imfeat_rhog",
                          ["imfeat/_rhog/rhog" + source_ext,
@@ -71,12 +70,12 @@ ext_modules = [Extension("_imfeat",
                          extra_compile_args=['-I', np.get_include()]),
                Extension("_imfeat_hog_latent",
                          ["imfeat/_hog_latent/hog_latent" + source_ext,
-                         'imfeat/_hog_latent/features.cc',
+                          'imfeat/_hog_latent/features.cc',
                           'imfeat/_hog_latent/resize.cc'],
                          extra_compile_args=['-I', np.get_include()]),
                Extension("_imfeat_lbp",
                          ["imfeat/_lbp/lbp" + source_ext,
-                         'imfeat/_lbp/lbp_aux.c'],
+                          'imfeat/_lbp/lbp_aux.c'],
                          extra_compile_args=['-I', np.get_include()]),
                Extension("_imfeat_gist",
                          ["imfeat/_gist/gist_cython" + source_ext,
@@ -88,14 +87,20 @@ ext_modules = [Extension("_imfeat",
                          extra_link_args=['-l', 'fftw3f'])]
 
 for e in ext_modules:
-    e.pyrex_directives = {"embedsignature": True}
+    e.pyrex_directives = { "embedsignature": True }
 
 
-setup(name='imfeat',
-      cmdclass=cmdclass,
-      version='.01',
-      packages=['imfeat', 'imfeat._rhog_dalal',
-                'imfeat._faces', 'imfeat._object_bank', 'imfeat._texton', 'imfeat._color_naming'],
-      package_data={'imfeat._faces': ['data/*'], 'imfeat._color_naming': ['data/*'],
-                    'imfeat._object_bank': ['data/OBmain', 'data/models/*']},
-      ext_modules=ext_modules)
+setup(
+        name='imfeat',
+        cmdclass=cmdclass,
+        version='.01',
+        packages=[
+            'imfeat', 'imfeat._rhog_dalal',
+            'imfeat._faces', 'imfeat._object_bank',
+            'imfeat._texton', 'imfeat._color_naming'
+        ],
+        package_data={
+            'imfeat._faces': ['data/*'], 'imfeat._color_naming': ['data/*'],
+            'imfeat._object_bank': ['data/OBmain', 'data/models/*']
+        },
+        ext_modules=ext_modules)
